@@ -41,6 +41,7 @@ else
   # Files
   echo "Files found, uploading $location ==> s3://"$s3bucket"/"
   pushoverSend "Starting to upload files. Prepare for your internet to slow down."
+  
   # Upload
   aws s3 cp $location s3://"$s3bucket"/ --recursive --exclude ".*"
   
