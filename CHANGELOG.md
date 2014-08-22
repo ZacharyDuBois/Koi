@@ -3,6 +3,7 @@
 ### v0.2.1
 
 - Priority should be 0 for Pushover.
+- Removes startup checks. They caused issues on some systems.
 
 ### v0.2
 
