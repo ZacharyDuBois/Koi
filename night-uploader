@@ -1,0 +1,71 @@
+#!/bin/bash
+# Night Updater
+# (c) Copyright Zachary DuBois, 2014. All rights reserved.
+version="v0.1"
+
+
+##
+# Variables
+##
+
+location=""
+s3bucket=""
+endLocation=""
+
+
+##
+# Startup Checks
+##
+
+# Check for root
+if [[ "$(id -u)" == "0" ]]
+then
+  echo "Do not run this script as root."
+  exit 1
+fi
+
+# Check for AWS ClI
+which aws > /dev/null
+checkForWget=$?
+if [[ "$checkForWget" != "0" ]]
+then 
+  echo "You need AWS CLI to run this script."
+  exit 1
+fi
+
+# Check for same start and end
+if [[ "$location" == "$endLocation" ]]
+then 
+  echo "You cannot use the same start and end locations."
+  exit 1
+fi
+
+
+##
+# Start
+##
+
+if [[ "$(ls $location)" == "" ]]
+then
+  # No Files
+  echo "No files"
+else
+  # Files
+  echo "Files found, uploading $location ==> s3://"$s3bucket"/"
+  
+  # Upload
+  aws s3 cp $location s3://"$s3bucket"/ --recursive --exclude ".*"
+  
+  # Move them to the done location.
+  echo "Done uploading. Moving files to $endLocation..."
+  mv "$location"* $endLocation
+fi
+
+
+##
+# Done
+##
+
+echo "Done"
+
+exit 0
