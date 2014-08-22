@@ -1,5 +1,10 @@
 # Change Log
 
+### v0.2.2
+
+- Adds back most startup checks.
+- Adds `$PATH` that caused the AWS and which commands to not work.
+
 ### v0.2.1
 
 - Priority should be 0 for Pushover.
