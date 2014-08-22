@@ -1,7 +1,8 @@
 #!/bin/bash
 # Night Updater
+# https://bitbucket.org/Zachary_DuBois/night-uploader
 # (c) Copyright Zachary DuBois, 2014. All rights reserved.
-version="v0.1"
+version="v0.2"
 
 
 ##
@@ -11,6 +12,12 @@ version="v0.1"
 location=""
 s3bucket=""
 endLocation=""
+# If you don't want to use Pushover, leave pushoverAppKey set to "".
+pushoverAppKey=""
+pushoverUserKey=""
+pushoverTitle="Night Uploader"
+pushoverURL=""
+pushoverURLTitle=""
 
 
 ##
@@ -45,20 +52,31 @@ fi
 # Start
 ##
 
+
+pushoverSend() {
+  message=$1
+  if [[ "$pushoverAppKey" != "" ]]
+  then
+    curl -s --form-string "token=$pushoverAppKey" --form-string "user=$pushoverUserKey" --form-string "url=$pushoverURL" --form-string "url_title=$pushoverURLTitle" --form-string "priority=-1" --form-string "title=$pushoverTitle" --form-string "message=$message" https://api.pushover.net/1/messages.json
+  fi
+}
+
 if [[ "$(ls $location)" == "" ]]
 then
   # No Files
   echo "No files"
+  pushoverSend "No uploads tonight! Enjoy!"
 else
   # Files
   echo "Files found, uploading $location ==> s3://"$s3bucket"/"
-  
+  pushoverSend "Starting to upload files. Prepare for your internet to slow down."
   # Upload
   aws s3 cp $location s3://"$s3bucket"/ --recursive --exclude ".*"
   
   # Move them to the done location.
   echo "Done uploading. Moving files to $endLocation..."
   mv "$location"* $endLocation
+  pushoverSend "All done! Enjoy your uploads!"
 fi
 
 

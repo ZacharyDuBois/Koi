@@ -1,6 +1,6 @@
 # Installation
 
-*v0.1*
+*v0.2*
 
 #### 1)
 
@@ -8,7 +8,7 @@ Download the script and fill out the information in the variables block.
 
 #### 2)
 
-Save the file into your users home (Maybe a directory higher than the folder for uploads or done?).
+Save the file into your users home directory (Maybe a directory higher than the folder for uploads or done?).
 
 #### 3)
 
