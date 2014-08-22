@@ -1,6 +1,6 @@
 # Night Uploader
 
-*v0.2*
+*v0.2.1*
 
 ## Features
 

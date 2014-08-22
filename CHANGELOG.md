@@ -1,5 +1,9 @@
 # Change Log
 
+### v0.2.1
+
+- Priority should be 0 for Pushover.
+
 ### v0.2
 
 - Pushover!
