@@ -93,15 +93,17 @@ else
   numberOfFiles=0
   aws s3 ls s3://"$s3bucket"/ | grep -v PRE | awk -F' ' '{ print $4 }' > $listingFile
   cat "$templateLocation""head" > $indexFile
+  
   while read listItem
   do
-    $((numberOfFiles++))
+    numberOfFiles=$(($numberOfFiles+1))
     echo "    <li><a href=\"/"$listItem"\">"$listItem"</a></li>" >> $indexFile
   done < $listingFile
+  
   cat "$templateLocation""afterlist" >> $indexFile
   echo "  <p><code>"$numberOfFiles" Items</code></p>" >> $indexFile
   echo "  <p>Index Last Updated: <code>"$curTime"</code></p>" >> $indexFile
-  echo "  <p>Files uploaded and generated with <a href=https\:\/\/bitbucket.org\/Zachary_DuBois\/night-uploader\">Night Uploader</a> <code>"$version"</code></p>" >> $indexFile
+  echo "  <p>Files uploaded and generated with <a href=\"https://bitbucket.org/Zachary_DuBois/night-uploader\">Night Uploader</a> <code>"$version"</code></p>" >> $indexFile
   cat "$templateLocation""footer" >> $indexFile
   rm $listingFile
   
