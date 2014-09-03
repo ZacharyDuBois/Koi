@@ -1,5 +1,10 @@
 # Change Log
 
+### v0.2.4
+
+- Cleans up the output of running.
+- Gives more information to find a point of failure.
+
 ### v0.2.3
 
 - Adds a list of newly added files when files are uploaded.

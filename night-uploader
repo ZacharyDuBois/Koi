@@ -3,7 +3,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # Night Updater
 # https://bitbucket.org/Zachary_DuBois/night-uploader
 # (c) Copyright Zachary DuBois, 2014. All rights reserved.
-version="v0.2.3"
+version="v0.2.4"
 
 
 ##
@@ -50,34 +50,46 @@ pushoverSend() {
   message=$1
   if [[ "$pushoverAppKey" != "" ]]
   then
-    curl -s --form-string "token=$pushoverAppKey" --form-string "user=$pushoverUserKey" --form-string "url=$pushoverURL" --form-string "url_title=$pushoverURLTitle" --form-string "priority=0" --form-string "title=$pushoverTitle" --form-string "message=$message" https://api.pushover.net/1/messages.json
+    curl -s --form-string "token=$pushoverAppKey" --form-string "user=$pushoverUserKey" --form-string "url=$pushoverURL" --form-string "url_title=$pushoverURLTitle" --form-string "priority=0" --form-string "title=$pushoverTitle" --form-string "message=$message" https://api.pushover.net/1/messages.json > /dev/null
+    pushoverStatus=$?
+    if [[ "$pushoverStatus" == "0" ]]
+    then
+      echo "Pushover message sent successfully: $message"
+    else
+      echo "Pushover failed to send message: $message"
+    fi
+  else
+    echo "No Pushover key set to send message: $message"
   fi
 }
 
 if [[ "$(ls $location)" == "" ]]
 then
   # No Files
-  echo "No files"
+  echo "No files for upload, exiting."
   pushoverSend "No uploads tonight! Enjoy!"
 else
   # Files
   echo "Files found, uploading $location ==> s3://"$s3bucket"/"
-  pushoverSend "Starting to upload files. Prepare for your internet to slow down."
+  pushoverSend "Starting to upload files to s3://"$s3bucket"/. Internet may slow down a bit."
   
   # Make a new files list
+  echo "Generating new files list."
   curTime=$(date '+%F %T')
   newUploadsFile="$location"New-Uploads.txt
   ls $location > $newUploadsFile
   echo "Last Updated: $curTime" >> $newUploadsFile
   
   # Upload
+  echo "Starting upload to s3://"$s3bucket"/"
   aws s3 cp $location s3://"$s3bucket"/ --recursive --exclude ".*"
   
   # Delete the new uploads file
+  echo "Removing new files list."
   rm $newUploadsFile
   
   # Move them to the done location.
-  echo "Done uploading. Moving files to $endLocation..."
+  echo "Moving files to $endLocation..."
   mv "$location"* $endLocation
   pushoverSend "All done! Enjoy your uploads!"
 fi
