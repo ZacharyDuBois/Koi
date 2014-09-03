@@ -104,6 +104,10 @@ else
   cat "$templateLocation""footer" >> $indexFile
   rm $listingFile
   
+  # Upload Index
+  echo "Uploading Index."
+  aws s3 cp $indexFile s3://"$s3bucket"/index.html
+  rm $indexFile
   
   # Delete the new uploads file
   echo "Removing new files list."
