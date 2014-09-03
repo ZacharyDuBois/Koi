@@ -87,6 +87,7 @@ else
   
   # Generate Index
   echo "Generating index file."
+  pushoverSend "Generating index file."
   indexFile="$location""index.html"
   listingFile="$location""tmp"
   numberOfFiles=0
