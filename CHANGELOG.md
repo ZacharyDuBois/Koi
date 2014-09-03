@@ -1,5 +1,9 @@
 # Change Log
 
+### v0.3
+
+- Generates an index.html file from listing of root items.
+
 ### v0.2.4
 
 - Cleans up the output of running.

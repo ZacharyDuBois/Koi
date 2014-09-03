@@ -3,7 +3,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # Night Updater
 # https://bitbucket.org/Zachary_DuBois/night-uploader
 # (c) Copyright Zachary DuBois, 2014. All rights reserved.
-version="v0.2.4"
+version="v0.3"
 
 
 ##
@@ -13,6 +13,7 @@ version="v0.2.4"
 location=""
 s3bucket=""
 endLocation=""
+templateLocation=""
 # If you don't want to use Pushover, leave pushoverAppKey set to "".
 pushoverAppKey=""
 pushoverUserKey=""
