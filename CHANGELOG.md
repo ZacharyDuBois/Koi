@@ -1,5 +1,9 @@
 # Change Log
 
+### v0.2.3
+
+- Adds a list of newly added files when files are uploaded.
+
 ### v0.2.2
 
 - Adds back most startup checks.

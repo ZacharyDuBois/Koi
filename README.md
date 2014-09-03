@@ -1,11 +1,12 @@
 # Night Uploader
 
-*v0.2.2*
+*v0.2.3*
 
 ## Features
 
 - Uploads files to AWS S3 over night to prevent slow internet during the day.
 - Pushover support.
+- Uploads a list of the last uploaded files.
 
 ## Requirements
 

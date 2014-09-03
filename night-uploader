@@ -3,7 +3,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # Night Updater
 # https://bitbucket.org/Zachary_DuBois/night-uploader
 # (c) Copyright Zachary DuBois, 2014. All rights reserved.
-version="v0.2.2"
+version="v0.2.3"
 
 
 ##
@@ -64,8 +64,17 @@ else
   echo "Files found, uploading $location ==> s3://"$s3bucket"/"
   pushoverSend "Starting to upload files. Prepare for your internet to slow down."
   
+  # Make a new files list
+  curTime=$(date '+%F %T')
+  newUploadsFile="$location"New-Uploads.txt
+  ls $location > $newUploadsFile
+  echo "Last Updated: $curTime" >> $newUploadsFile
+  
   # Upload
   aws s3 cp $location s3://"$s3bucket"/ --recursive --exclude ".*"
+  
+  # Delete the new uploads file
+  rm $newUploadsFile
   
   # Move them to the done location.
   echo "Done uploading. Moving files to $endLocation..."
