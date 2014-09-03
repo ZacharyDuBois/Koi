@@ -4,6 +4,7 @@
 
 - Cleans up the output of running.
 - Gives more information to find a point of failure.
+- Checks for both Pushover App and User keys now.
 
 ### v0.2.3
 

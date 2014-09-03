@@ -48,7 +48,7 @@ fi
 
 pushoverSend() {
   message=$1
-  if [[ "$pushoverAppKey" != "" ]]
+  if [[ "$pushoverAppKey" != "" ]] && [[ "$pushoverUserKey" != "" ]]
   then
     curl -s --form-string "token=$pushoverAppKey" --form-string "user=$pushoverUserKey" --form-string "url=$pushoverURL" --form-string "url_title=$pushoverURLTitle" --form-string "priority=0" --form-string "title=$pushoverTitle" --form-string "message=$message" https://api.pushover.net/1/messages.json > /dev/null
     pushoverStatus=$?
