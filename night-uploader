@@ -92,6 +92,7 @@ else
   listingFile="$location""tmp"
   numberOfFiles=0
   aws s3 ls s3://"$s3bucket"/ | grep -v PRE | awk -F' ' '{ print $4 }' > $listingFile
+  sort -f $listingFile -o $listingFile
   cat "$templateLocation""head" > $indexFile
   
   while read listItem
