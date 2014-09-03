@@ -4,6 +4,10 @@
 
 - Generates an index.html file from listing of root items.
 - Fixes issue #1 where the New-Uploads.txt would contain itself.
+- More startup checks to make sure everything runs properly.
+- Checks to make sure no more than one AWS command is running at a time. It will wait if there is already an AWS process running.
+- Automatically sets read permissions to newly uploaded items.
+- Makes use of tmp files.
 
 ### v0.2.4
 
