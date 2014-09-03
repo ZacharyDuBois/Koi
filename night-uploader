@@ -83,7 +83,7 @@ else
   
   # Upload
   echo "Starting upload to s3://"$s3bucket"/"
-  aws s3 cp $location s3://"$s3bucket"/ --recursive --exclude ".*"
+  aws s3 cp $location s3://"$s3bucket"/ --recursive --exclude ".*" --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
   
   # Generate Index
   echo "Generating index file."
@@ -110,7 +110,7 @@ else
   
   # Upload Index
   echo "Uploading Index."
-  aws s3 cp $indexFile s3://"$s3bucket"/index.html
+  aws s3 cp $indexFile s3://"$s3bucket"/index.html --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
   rm $indexFile
   
   # Delete the new uploads file
