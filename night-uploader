@@ -10,11 +10,20 @@ version="v0.3"
 # Variables
 ##
 
+# All locations should be the full path to the directories with a trailing slash.
 location=""
 s3bucket=""
 endLocation=""
 templateLocation=""
-# If you don't want to use Pushover, leave pushoverAppKey set to "".
+# The next 7 are not recommend to edit but you may if you'd like.
+indexFile="index.html"
+indexFileLoc="$location""$indexFile"
+listingFile="tmp"
+listingFileLoc="$location""$listingFile"
+newUploadsFile="New-Uploads.txt"
+newUploadsFileLoc="$location""$newUploadsFile"
+curTime=$(date '+%F %T')
+# If you don't want to use Pushover, leave pushoverAppKey and/or pushoverUserKey set to "".
 pushoverAppKey=""
 pushoverUserKey=""
 pushoverTitle="Night Uploader"
@@ -76,10 +85,8 @@ else
   
   # Make a new files list
   echo "Generating new files list."
-  curTime=$(date '+%F %T')
-  newUploadsFile="$location""New-Uploads.txt"
-  ls $location | grep -v New-Uploads.txt > $newUploadsFile
-  echo "Last Updated: $curTime" >> $newUploadsFile
+  ls $location | grep -v $newUploadsFile > $newUploadsFileLoc
+  echo "Last Updated: $curTime" >> $newUploadsFileLoc
   
   # Upload
   echo "Starting upload to s3://"$s3bucket"/"
@@ -88,34 +95,32 @@ else
   # Generate Index
   echo "Generating index file."
   pushoverSend "Generating index file."
-  indexFile="$location""index.html"
-  listingFile="$location""tmp"
   numberOfFiles=0
-  aws s3 ls s3://"$s3bucket"/ | grep -v PRE | awk -F' ' '{ print $4 }' > $listingFile
-  sort -f $listingFile -o $listingFile
-  cat "$templateLocation""head" > $indexFile
+  aws s3 ls s3://"$s3bucket"/ | grep -v PRE | awk -F' ' '{ print $4 }' > $listingFileLoc
+  sort -f $listingFileLoc -o $listingFileLoc
+  cat "$templateLocation""head" > $indexFileLoc
   
   while read listItem
   do
     numberOfFiles=$(($numberOfFiles+1))
-    echo "    <li><a href=\"/"$listItem"\">"$listItem"</a></li>" >> $indexFile
-  done < $listingFile
+    echo "    <li><a href=\"/"$listItem"\">"$listItem"</a></li>" >> $indexFileLoc
+  done < $listingFileLoc
   
-  cat "$templateLocation""afterlist" >> $indexFile
-  echo "  <p><code>"$numberOfFiles" Items</code></p>" >> $indexFile
-  echo "  <p>Index Last Updated: <code>"$curTime"</code></p>" >> $indexFile
-  echo "  <p>Files uploaded and generated with <a href=\"https://bitbucket.org/Zachary_DuBois/night-uploader\">Night Uploader</a> <code>"$version"</code></p>" >> $indexFile
-  cat "$templateLocation""footer" >> $indexFile
-  rm $listingFile
+  cat "$templateLocation""afterlist" >> $indexFileLoc
+  echo "  <p><code>"$numberOfFiles" Items</code></p>" >> $indexFileLoc
+  echo "  <p>Index Last Updated: <code>"$curTime"</code></p>" >> $indexFileLoc
+  echo "  <p>Files uploaded and generated with <a href=\"https://bitbucket.org/Zachary_DuBois/night-uploader\">Night Uploader</a> <code>"$version"</code></p>" >> $indexFileLoc
+  cat "$templateLocation""footer" >> $indexFileLoc
   
   # Upload Index
   echo "Uploading Index."
-  aws s3 cp $indexFile s3://"$s3bucket"/index.html --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
-  rm $indexFile
+  aws s3 cp $indexFileLoc s3://"$s3bucket"/"$indexFile" --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
   
   # Delete the new uploads file
-  echo "Removing new files list."
-  rm $newUploadsFile
+  echo "Cleaning up."
+  rm $newUploadsFileLoc
+  rm $listingFileLoc
+  rm $indexFileLoc
   
   # Move them to the done location.
   echo "Moving files to $endLocation..."
