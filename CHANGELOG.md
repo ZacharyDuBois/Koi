@@ -3,6 +3,7 @@
 ### v0.3
 
 - Generates an index.html file from listing of root items.
+- Fixes issue #1 where the New-Uploads.txt would contain itself.
 
 ### v0.2.4
 

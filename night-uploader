@@ -78,7 +78,7 @@ else
   echo "Generating new files list."
   curTime=$(date '+%F %T')
   newUploadsFile="$location""New-Uploads.txt"
-  ls $location > $newUploadsFile
+  ls $location | grep -v New-Uploads.txt > $newUploadsFile
   echo "Last Updated: $curTime" >> $newUploadsFile
   
   # Upload
