@@ -37,5 +37,3 @@
 
 - Initial release.
 
-
-Copyright (c) Zachary DuBois, 2014. All Rights Reserved.

@@ -71,5 +71,3 @@ If you want to be able to use your own index theme or HTML, you can! Open up the
     footer
 
 Items in brackets `[]` are added by the script and items not in brackets are added directly from that named template file.
-
-Copyright (c) Zachary DuBois, 2014. All Rights Reserved.
