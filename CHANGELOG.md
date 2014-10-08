@@ -1,5 +1,9 @@
 # Change Log
 
+### v0.3.1
+
+- Re-Licensed the code correctly this time. Now it is correctly under MIT.
+
 ### v0.3
 
 - Generates an index.html file from listing of root items.
