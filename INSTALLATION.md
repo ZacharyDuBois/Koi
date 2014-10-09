@@ -1,6 +1,8 @@
 # Installation
 
-*v0.3.1*
+*v0.4*
+
+**Needs editing**
 
 #### 1)
 
