@@ -150,12 +150,15 @@ makeIndex() {
   aws s3 ls s3://"$s3bucket"/ | grep -v PRE | awk -F' ' '{ print $4 }' > $listingFileLoc
   sort -f $listingFileLoc -o $listingFileLoc
   cat "$templateLocation""head" > $indexFileLoc
+  echo "  <ul>" > $indexFileLoc
   
   while read listItem
   do
     numberOfFiles=$(($numberOfFiles+1))
     echo "    <li><a href=\"/"$listItem"\">"$listItem"</a></li>" >> $indexFileLoc
   done < $listingFileLoc
+  
+  echo "  </ul>" > $indexFileLoc
   
   cat "$templateLocation""afterlist" >> $indexFileLoc
   echo "  <p><code>"$numberOfFiles" Items</code></p>" >> $indexFileLoc
