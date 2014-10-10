@@ -181,11 +181,42 @@ moveFiles() {
   mv "$location"* $endLocation
 }
 
+##
+# Run Types and Workflows
+##
+
 if [[ "$runType" == "" ]]
 then
   # Standard run. List new files, upload, transcode media, make media pages, index.
   echo "$notice Starting standard run."
+  if [[ "$(ls $location)" == "" ]]
+  then
+    # No files to upload, reindex the CDN, see if anything needs transcoding, or needs media pages. Then, finish.
+    echo "$ok No files found for upload."
+    pushoverSend "No files found for upload. Reindexing."
+    makeIndex
+    # Transcode
+    # Media pages
+    
+    cleanUp
+    echo "$ok Finished standard run."
+    pushoverSend "Finished a standard run."
+  else
+    # New files found. Make listing of new, upload, move, transcode, media player pages, and index.
+    echo "$ok Files found, continuing with workflow."
+    pushoverSend "New files are being prepared for upload."
+    
+    makeNewFilesList
+    uploadFiles
+    cleanUp
+    moveFiles
+    # Transcode
+    # Media pages
+    makeIndex
+    cleanUp
+  fi
 fi
+
 
 ##
 # Done
