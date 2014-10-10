@@ -29,38 +29,54 @@ pushoverTitle="Night Uploader"
 pushoverURL=""
 pushoverURLTitle=""
 
+# Do not edit
+runType=$1
+
+
+##
+# Message Types
+##
+
+fail="[$(tput setaf 1)FAIL$(tput sgr0)]"
+ok="[$(tput setaf 2)OK$(tput sgr0)]"
+running="[$(tput setaf 3)*$(tput sgr0)]"
+notice="[$(tput setaf 3)NOTICE$(tput sgr0)]"
+warning="[$(tput setaf 3)WARNING$(tput sgr0)]"
+info="[$(tput setaf 6)INFO$(tput sgr0)]"
+finish="[$(tput setaf 4)DONE$(tput sgr0)]"
+
 
 ##
 # Startup Checks
 ##
 
 # Check for root
-if [[ "$(id -u)" == "0" ]]
+if [[ "$(id -u)" == 0 ]]
 then
-  echo "Do not run this script as root."
+  echo "$fail Do not run this script as root."
   exit 1
 fi
 
 # Check for AWS CLI
 which aws > /dev/null
 checkForAWS=$?
-if [[ "$checkForAWS" != "0" ]]
+if [[ "$checkForAWS" != 0 ]]
 then 
-  echo "You need AWS CLI to run this script."
+  echo "$fail You need AWS CLI to run this script."
   exit 1
 fi
 
 # Check for variables set correctly
 if [[ "$location" == "" ]] && [[ "$s3bucket" == "" ]] && [[ "$endLocation" == "" ]] && [[ "$templateLocation" == "" ]] && [[ "$indexFile" == "" ]] && [[ "$indexFileLoc" == "" ]] && [[ "$listingFile" == "" ]] && [[ "$listingFileLoc" == "" ]] && [[ "$newUploadsFile" == "" ]] && [[ "$newUploadsFileLoc" == "" ]] && [[ "$curTime" == "" ]]
 then
-  echo "You have not set all the required variables in the variables block. Please edit them with the correct details."
+  echo "$fail You have not set all the required variables in the variables block. Please edit them with the correct details."
   exit 1
 fi
 
 # Check if locations and files exist.
 if ! [[ -d "$location" ]] && ! [[ -d "$endLocation" ]] && ! [[ -d "$templateLocation" ]] && ! [[ -r "$templateLocation""afterlist" ]] && ! [[ -r "$templateLocation""footer" ]] && ! [[ -r "$templateLocation""head" ]]
 then
-  echo "One or more of the folders and/or files does not exist."
+  echo "$fail One or more of the folders and/or files does not exist."
   exit 1
 fi
 
@@ -70,11 +86,18 @@ while ps aux | grep -v grep | grep "aws" > /dev/null
 do
   if [[ "$retryCount" == 0 ]]
   then
-    echo "AWS is currently running. Waiting for AWS to finish to avoid issues."
+    echo "$warning AWS is currently running. Waiting for AWS to finish to avoid issues."
   fi
+  
+  if [[ "$retryCount" == 3600 ]]
+  then
+    echo "$fail Night Uploader failed to run due to an active AWS process taking longer than 3600 seconds."
+    exit 1
+  fi
+  
   echo -n "."
   retryCount=$((retryCount+1))
-  sleep 5
+  sleep 1
 done
 if [[ "$retryCount" != 0 ]]
 then
@@ -92,34 +115,34 @@ pushoverSend() {
   then
     curl -s --form-string "token=$pushoverAppKey" --form-string "user=$pushoverUserKey" --form-string "url=$pushoverURL" --form-string "url_title=$pushoverURLTitle" --form-string "priority=0" --form-string "title=$pushoverTitle" --form-string "message=$message" https://api.pushover.net/1/messages.json > /dev/null
     pushoverStatus=$?
-    if [[ "$pushoverStatus" == "0" ]]
+    if [[ "$pushoverStatus" == 0 ]]
     then
-      echo "Pushover message sent successfully: $message"
+      echo "$info Pushover message sent successfully: $message"
     else
-      echo "Pushover failed to send message: $message"
+      echo "$warning Pushover failed to send message: $message"
     fi
   else
-    echo "No Pushover key set to send message: $message"
+    echo "$info No Pushover key set to send message: $message"
   fi
 }
 
 makeNewFilesList() {
   # Make a new files list
-  echo "Generating new files list."
+  echo "$running Generating new files list."
   ls $location | grep -v $newUploadsFile > $newUploadsFileLoc
   echo "Last Updated: $curTime" >> $newUploadsFileLoc
 }
 
 uploadFiles() {
   # Upload
-  echo "Starting upload to s3://"$s3bucket"/"
+  echo "$running Starting upload to s3://"$s3bucket"/"
   pushoverSend "Starting to upload files to s3://"$s3bucket"/. Internet may slow down a bit."
   aws s3 cp $location s3://"$s3bucket"/ --recursive --exclude ".*" --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
 }
 
 makeIndex() {
   # Generate Index
-  echo "Generating index file."
+  echo "$running Generating index file."
   pushoverSend "Generating index file."
   
   numberOfFiles=0
@@ -141,12 +164,12 @@ makeIndex() {
   cat "$templateLocation""footer" >> $indexFileLoc
   
   # Upload Index
-  echo "Uploading Index."
+  echo "$running Uploading Index."
   aws s3 cp $indexFileLoc s3://"$s3bucket"/"$indexFile" --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
 }
 
 cleanUp() {
-  echo "Cleaning up."
+  echo "$running Cleaning up."
   rm $newUploadsFileLoc
   rm $listingFileLoc
   rm $indexFileLoc
@@ -154,35 +177,20 @@ cleanUp() {
 
 moveFiles() {
   # Move them to the done location.
-  echo "Moving files to $endLocation..."
+  echo "$running Moving files to $endLocation..."
   mv "$location"* $endLocation
 }
 
-if [[ "$(ls $location)" == "" ]]
+if [[ "$runType" == "" ]]
 then
-  # No Files
-  echo "No files for upload, exiting."
-  pushoverSend "No uploads tonight! Enjoy!"
-else
-  # Files
-  echo "Files found, uploading $location ==> s3://"$s3bucket"/"
-  
-    
-
-  
-
-  
-  # Delete the new uploads file
-
-  
-  pushoverSend "All done! Enjoy your uploads!"
+  # Standard run. List new files, upload, transcode media, make media pages, index.
+  echo "$notice Starting standard run."
 fi
-
 
 ##
 # Done
 ##
 
-echo "Done"
+echo "$finish Done"
 
 exit 0

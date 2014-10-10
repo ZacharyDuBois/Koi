@@ -3,6 +3,8 @@
 ## v0.4
 
 - Moves most tasks into functions.
+- Better output logging.
+- Adds different `runType`s.
 
 ### v0.3.1
 
