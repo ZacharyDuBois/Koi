@@ -103,29 +103,27 @@ pushoverSend() {
   fi
 }
 
-if [[ "$(ls $location)" == "" ]]
-then
-  # No Files
-  echo "No files for upload, exiting."
-  pushoverSend "No uploads tonight! Enjoy!"
-else
-  # Files
-  echo "Files found, uploading $location ==> s3://"$s3bucket"/"
-  pushoverSend "Starting to upload files to s3://"$s3bucket"/. Internet may slow down a bit."
-  
+makeNewFilesList() {
   # Make a new files list
   echo "Generating new files list."
   ls $location | grep -v $newUploadsFile > $newUploadsFileLoc
   echo "Last Updated: $curTime" >> $newUploadsFileLoc
-  
+}
+
+uploadFiles() {
   # Upload
   echo "Starting upload to s3://"$s3bucket"/"
+  pushoverSend "Starting to upload files to s3://"$s3bucket"/. Internet may slow down a bit."
   aws s3 cp $location s3://"$s3bucket"/ --recursive --exclude ".*" --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
-  
+}
+
+makeIndex() {
   # Generate Index
   echo "Generating index file."
   pushoverSend "Generating index file."
+  
   numberOfFiles=0
+  
   aws s3 ls s3://"$s3bucket"/ | grep -v PRE | awk -F' ' '{ print $4 }' > $listingFileLoc
   sort -f $listingFileLoc -o $listingFileLoc
   cat "$templateLocation""head" > $indexFileLoc
@@ -145,16 +143,38 @@ else
   # Upload Index
   echo "Uploading Index."
   aws s3 cp $indexFileLoc s3://"$s3bucket"/"$indexFile" --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
-  
-  # Delete the new uploads file
+}
+
+cleanUp() {
   echo "Cleaning up."
   rm $newUploadsFileLoc
   rm $listingFileLoc
   rm $indexFileLoc
-  
+}
+
+moveFiles() {
   # Move them to the done location.
   echo "Moving files to $endLocation..."
   mv "$location"* $endLocation
+}
+
+if [[ "$(ls $location)" == "" ]]
+then
+  # No Files
+  echo "No files for upload, exiting."
+  pushoverSend "No uploads tonight! Enjoy!"
+else
+  # Files
+  echo "Files found, uploading $location ==> s3://"$s3bucket"/"
+  
+    
+
+  
+
+  
+  # Delete the new uploads file
+
+  
   pushoverSend "All done! Enjoy your uploads!"
 fi
 

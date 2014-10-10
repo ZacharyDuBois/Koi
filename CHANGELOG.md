@@ -2,7 +2,7 @@
 
 ## v0.4
 
-
+- Moves most tasks into functions.
 
 ### v0.3.1
 
