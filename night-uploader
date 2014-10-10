@@ -199,8 +199,6 @@ then
     # Media pages
     
     cleanUp
-    echo "$ok Finished standard run."
-    pushoverSend "Finished a standard run."
   else
     # New files found. Make listing of new, upload, move, transcode, media player pages, and index.
     echo "$ok Files found, continuing with workflow."
@@ -215,6 +213,8 @@ then
     makeIndex
     cleanUp
   fi
+  echo "$ok Finished standard run."
+  pushoverSend "Finished a standard run."
 fi
 
 
