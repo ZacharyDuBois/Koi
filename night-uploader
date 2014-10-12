@@ -74,7 +74,7 @@ then
 fi
 
 # Check if locations and files exist.
-if ! [[ -d "$location" ]] && ! [[ -d "$endLocation" ]] && ! [[ -d "$templateLocation" ]] && ! [[ -r "$templateLocation""afterlist" ]] && ! [[ -r "$templateLocation""footer" ]] && ! [[ -r "$templateLocation""head" ]]
+if ! [[ -d "$location" ]] && ! [[ -d "$endLocation" ]] && ! [[ -d "$templateLocation" ]] && ! [[ -r "$templateLocation""aftercontent.html" ]] && ! [[ -r "$templateLocation""footer.html" ]] && ! [[ -r "$templateLocation""head.html" ]]
 then
   echo "$fail One or more of the folders and/or files does not exist."
   exit 1
@@ -149,7 +149,7 @@ makeIndex() {
   
   aws s3 ls s3://"$s3bucket"/ | grep -v PRE | awk -F' ' '{ print $4 }' > $listingFileLoc
   sort -f $listingFileLoc -o $listingFileLoc
-  cat "$templateLocation""head" > $indexFileLoc
+  cat "$templateLocation""head.html" > $indexFileLoc
   echo "  <ul>" > $indexFileLoc
   
   while read listItem
@@ -160,11 +160,11 @@ makeIndex() {
   
   echo "  </ul>" > $indexFileLoc
   
-  cat "$templateLocation""afterlist" >> $indexFileLoc
+  cat "$templateLocation""aftercontent.html" >> $indexFileLoc
   echo "  <p><code>"$numberOfFiles" Items</code></p>" >> $indexFileLoc
   echo "  <p>Index Last Updated: <code>"$curTime"</code></p>" >> $indexFileLoc
   echo "  <p>Files uploaded and generated with <a href=\"https://bitbucket.org/Zachary_DuBois/night-uploader\">Night Uploader</a> <code>"$version"</code></p>" >> $indexFileLoc
-  cat "$templateLocation""footer" >> $indexFileLoc
+  cat "$templateLocation""footer.html" >> $indexFileLoc
   
   # Upload Index
   echo "$running Uploading Index."
