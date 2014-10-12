@@ -5,6 +5,7 @@
 - Moves most tasks into functions.
 - Better output logging.
 - Adds different `runType`s.
+- Changes generation files names and extensions.
 
 ### v0.3.1
 
