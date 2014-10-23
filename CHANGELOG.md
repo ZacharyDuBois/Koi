@@ -10,6 +10,8 @@
 - Adds workflows so you can create a custom setup easily.
 - Adds a separate place for temporary files.
 - Changes a lot of the configuration variables.
+- Adds automatic Elastic Transcoding of media files.
+- Waits for transcoding to fully finish.
 
 ### v0.3.1
 

@@ -211,6 +211,34 @@ transcodeMedia() {
 
   echo "$info Queued $etcQueued jobs."
   pushoverSend "Queued $etcQueued transcoding jobs."
+
+  # Wait for all of them to compleate.
+  etcWaitCount=0
+  while aws elastictranscoder list-jobs-by-status --status Submitted | grep $etcPipelineID > /dev/null
+  do
+    if [[ "$etcWaitCount" == 0 ]]
+    then
+      echo "$running Waiting for all jobs to be progressing."
+    fi
+    etcWaitCount=$((etcWaitCount+1))
+    sleep 5
+  done
+  echo "$info Wait looped $etcWaitCount times."
+
+  etcWaitCount=0
+  while aws elastictranscoder list-jobs-by-status --status Progressing | grep $etcPipelineID > /dev/null
+  do
+    if [[ "$etcWaitCount" == 0 ]]
+    then
+      echo "$running Waiting for all jobs to be compleate."
+    fi
+    etcWaitCount=$((etcWaitCount+1))
+    sleep 5
+  done
+  echo "$info Wait looped $etcWaitCount times."
+
+  echo "$ok Transcoding done."
+  pushoverSend "Finished transcoding files."
 }
 
 
@@ -273,7 +301,7 @@ then
     uploadFiles
     cleanUp
     moveFiles
-    # Transcode
+    transcodeMedia
     # Media pages
     makeIndex
     cleanUp
