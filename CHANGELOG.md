@@ -7,6 +7,7 @@
 - Adds different `runType`s.
 - Changes generation files names and extensions.
 - AWS process conflict now has a variable fail time and sends notifications via Pushover.
+- Adds workflows so you can create a custom setup easily.
 
 ### v0.3.1
 

@@ -190,19 +190,20 @@ fi
 # Run Types and Workflows
 ##
 
-if [[ "$runType" == "" ]]
+echo "$notice Starting workflow ID $runType."
+
+if [[ "$runType" == "" ]] || [[ "$runType" == "1" ]]
 then
-  # Standard run. List new files, upload, transcode media, make media pages, index.
-  echo "$notice Starting standard run."
   if [[ "$(ls $location)" == "" ]]
-  then
-    # No files to upload, reindex the CDN, see if anything needs transcoding, or needs media pages. Then, finish.
+    then
+    # Standard run w/ changes. transcode media, make media pages, index.
+    # No files to upload, reindex, see if anything needs transcoding, or needs media pages. Then, finish.
     echo "$ok No files found for upload."
     pushoverSend "No files found for upload. Reindexing."
-    makeIndex
+
     # Transcode
     # Media pages
-    
+    makeIndex
     cleanUp
   else
     # New files found. Make listing of new, upload, move, transcode, media player pages, and index.
@@ -218,9 +219,20 @@ then
     makeIndex
     cleanUp
   fi
-  echo "$ok Finished standard run."
-  pushoverSend "Finished a standard run."
+elif [[ "$runType" == "2" ]]
+then
+  # Index run transcode media, make media pages, index.
+  echo "$ok Running index workflow."
+  pushoverSend "Running index workflow."
+  
+  # Transcode
+  # Media pages
+  makeIndex
+  cleanUp
 fi
+  
+echo "$ok Finished workflow ID $runType."
+pushoverSend "Finished workflow ID $runType."
 
 
 ##
