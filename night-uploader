@@ -165,13 +165,36 @@ moveFiles() {
   fi
 }
 
-#transcodeMedia() {
+transcodeMedia() {
   # Transcode media on the CDN that does not have a copy in mp4 and mp3.
-#  echo "$running Finding media that needs to be transcoded"
-#  aws s3 ls s3://"$s3bucket"/ | grep -v PRE | awk -F' ' '{ print $4 }' > $listingFileLoc
+  echo "$running Finding media that needs to be transcoded"
 
+  aws s3 ls s3://"$s3bucket"/ | grep -v PRE | awk -F' ' '{ print $4 }' > $listingFileLoc
 
-#}
+  filesList=$(cat $listingFileLoc)
+
+  while read mediaItem
+  do
+    # Remove the extention - TODO: Fix the fact that you cannot have files with dots
+    noExtItem=$(echo $mediaItem | awk -F'.' '{ print $1 }')
+
+    shopt -s nocasematch
+    if [[ "$mediaItem"  "(.*\.(mp4|mov|mkv|m4v)$)" ]]
+    then
+      # Find all the video files.
+      if [[ "$(echo $filesList | grep $noExtItem).mp4" == "" ]]
+      then
+        # If there is no matches for the mp4 version, make a conversion.
+        # TODO: AWS ETC Command.
+      fi
+      if [[ "$(echo $filesList | grep $noExtItem).mp3" == "" ]]
+      then
+        # If there is no matches for the mp3 version, make a conversion.
+        # TODO: AWS ETC Command.
+      fi
+    fi
+  done < $listingFileLoc
+}
 
 
 ##
