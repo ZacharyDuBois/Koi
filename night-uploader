@@ -9,11 +9,12 @@ version="v0.4"
 # Variables
 ##
 
-# All locations should be the full path to the directories with a trailing slash.
-location=""
+# All variables ending with Loc are full paths to directories or files. The also must contain a trailing slash if they are a direcotry.
+loc=""
 s3bucket=""
-endLocation=""
-templateLocation=""
+endLoc=""
+templateLoc=""
+temporaryDirLoc=""
 failTime=3600
 # If you don't want to use Pushover, leave pushoverAppKey and/or pushoverUserKey set to "".
 pushoverAppKey=""
@@ -23,11 +24,11 @@ pushoverURL=""
 pushoverURLTitle=""
 # The next 7 are not recommend to edit but you may if you'd like.
 indexFile="index.html"
-indexFileLoc="$location""$indexFile"
+indexFileLoc="$temporaryDirLoc""$indexFile"
 listingFile="tmp"
-listingFileLoc="$location""$listingFile"
+listingFileLoc="$temporaryDirLoc""$listingFile"
 newUploadsFile="New-Uploads.txt"
-newUploadsFileLoc="$location""$newUploadsFile"
+newUploadsFileLoc="$temporaryDirLoc""$newUploadsFile"
 curTime=$(date '+%F %T')
 # Do not edit past this line
 runType=$1
@@ -67,14 +68,14 @@ then
 fi
 
 # Check for variables set correctly
-if [[ "$location" == "" ]] && [[ "$s3bucket" == "" ]] && [[ "$endLocation" == "" ]] && [[ "$templateLocation" == "" ]] && [[ "$indexFile" == "" ]] && [[ "$indexFileLoc" == "" ]] && [[ "$listingFile" == "" ]] && [[ "$listingFileLoc" == "" ]] && [[ "$newUploadsFile" == "" ]] && [[ "$newUploadsFileLoc" == "" ]] && [[ "$curTime" == "" ]]
+if [[ "$loc" == "" ]] && [[ "$s3bucket" == "" ]] && [[ "$endLoc" == "" ]] && [[ "$templateLoc" == "" ]] && [[ "$temporaryDirLoc" == "" ]] && [[ "$indexFile" == "" ]] && [[ "$indexFileLoc" == "" ]] && [[ "$listingFile" == "" ]] && [[ "$listingFileLoc" == "" ]] && [[ "$newUploadsFile" == "" ]] && [[ "$newUploadsFileLoc" == "" ]] && [[ "$curTime" == "" ]]
 then
   echo "$fail You have not set all the required variables in the variables block. Please edit them with the correct details."
   exit 1
 fi
 
-# Check if locations and files exist.
-if ! [[ -d "$location" ]] && ! [[ -d "$endLocation" ]] && ! [[ -d "$templateLocation" ]] && ! [[ -r "$templateLocation""aftercontent.html" ]] && ! [[ -r "$templateLocation""footer.html" ]] && ! [[ -r "$templateLocation""head.html" ]]
+# Check if locs and files exist.
+if ! [[ -d "$loc" ]] && ! [[ -d "$endLoc" ]] && ! [[ -d "$templateLoc" ]] && ! [[ -d "$temporaryDirLoc" ]]&& ! [[ -r "$templateLoc""aftercontent.html" ]] && ! [[ -r "$templateLoc""footer.html" ]] && ! [[ -r "$templateLoc""head.html" ]]
 then
   echo "$fail One or more of the folders and/or files does not exist."
   exit 1
@@ -105,15 +106,15 @@ pushoverSend() {
 makeNewFilesList() {
   # Make a new files list
   echo "$running Generating new files list."
-  ls $location | grep -v $newUploadsFile > $newUploadsFileLoc
+  ls $loc > $newUploadsFileLoc
   echo "Last Updated: $curTime" >> $newUploadsFileLoc
 }
 
 uploadFiles() {
   # Upload
   echo "$running Starting upload to s3://"$s3bucket"/"
-  pushoverSend "Starting to upload files to s3://"$s3bucket"/. Internet may slow down a bit."
-  aws s3 cp $location s3://"$s3bucket"/ --recursive --exclude ".*" --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
+  pushoverSend "Starting to upload files to s3://"$s3bucket"/."
+  aws s3 cp $loc s3://"$s3bucket"/ --recursive --exclude ".*" --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
 }
 
 makeIndex() {
@@ -125,7 +126,7 @@ makeIndex() {
   
   aws s3 ls s3://"$s3bucket"/ | grep -v PRE | awk -F' ' '{ print $4 }' > $listingFileLoc
   sort -f $listingFileLoc -o $listingFileLoc
-  cat "$templateLocation""head.html" > $indexFileLoc
+  cat "$templateLoc""head.html" > $indexFileLoc
   echo "  <ul>" >> $indexFileLoc
   
   while read listItem
@@ -136,11 +137,11 @@ makeIndex() {
   
   echo "  </ul>" >> $indexFileLoc
   
-  cat "$templateLocation""aftercontent.html" >> $indexFileLoc
+  cat "$templateLoc""aftercontent.html" >> $indexFileLoc
   echo "  <p><code>"$numberOfFiles" Items</code></p>" >> $indexFileLoc
   echo "  <p>Index Last Updated: <code>"$curTime"</code></p>" >> $indexFileLoc
   echo "  <p>Files uploaded and generated with <a href=\"https://bitbucket.org/Zachary_DuBois/night-uploader\">Night Uploader</a> <code>"$version"</code></p>" >> $indexFileLoc
-  cat "$templateLocation""footer.html" >> $indexFileLoc
+  cat "$templateLoc""footer.html" >> $indexFileLoc
   
   # Upload Index
   echo "$running Uploading Index."
@@ -149,16 +150,33 @@ makeIndex() {
 
 cleanUp() {
   echo "$running Cleaning up."
-  rm $newUploadsFileLoc
-  rm $listingFileLoc
-  rm $indexFileLoc
+  if [[ "$temporaryDirLoc" != "" ]]
+  then
+    rm "$temporaryDirLoc"*
+  fi
 }
 
 moveFiles() {
-  # Move them to the done location.
-  echo "$running Moving files to $endLocation..."
-  mv "$location"* $endLocation
+  # Move them to the done loc.
+  echo "$running Moving files to $endLoc..."
+  if [[ "$loc" != "" ]]
+  then
+    mv "$loc"* $endLoc
+  fi
 }
+
+#transcodeMedia() {
+  # Transcode media on the CDN that does not have a copy in mp4 and mp3.
+#  echo "$running Finding media that needs to be transcoded"
+#  aws s3 ls s3://"$s3bucket"/ | grep -v PRE | awk -F' ' '{ print $4 }' > $listingFileLoc
+
+
+#}
+
+
+##
+# AWS Check
+##
 
 # Check if AWS is running already
 retryCount=0
@@ -186,6 +204,7 @@ then
   echo
 fi
 
+
 ##
 # Run Types and Workflows
 ##
@@ -194,7 +213,7 @@ echo "$notice Starting workflow ID $runType."
 
 if [[ "$runType" == "" ]] || [[ "$runType" == "1" ]]
 then
-  if [[ "$(ls $location)" == "" ]]
+  if [[ "$(ls $loc)" == "" ]]
     then
     # Standard run w/ changes. transcode media, make media pages, index.
     # No files to upload, reindex, see if anything needs transcoding, or needs media pages. Then, finish.

@@ -8,6 +8,8 @@
 - Changes generation files names and extensions.
 - AWS process conflict now has a variable fail time and sends notifications via Pushover.
 - Adds workflows so you can create a custom setup easily.
+- Adds a separate place for temporary files.
+- Changes a lot of the configuration variables.
 
 ### v0.3.1
 
