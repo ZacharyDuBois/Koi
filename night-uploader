@@ -229,6 +229,9 @@ then
   # Media pages
   makeIndex
   cleanUp
+else
+  echo "$fail Unknown workflow ID $runType."
+  exit 1
 fi
   
 echo "$ok Finished workflow ID $runType."
