@@ -14,6 +14,13 @@ location=""
 s3bucket=""
 endLocation=""
 templateLocation=""
+failTime=3600
+# If you don't want to use Pushover, leave pushoverAppKey and/or pushoverUserKey set to "".
+pushoverAppKey=""
+pushoverUserKey=""
+pushoverTitle="Night Uploader"
+pushoverURL=""
+pushoverURLTitle=""
 # The next 7 are not recommend to edit but you may if you'd like.
 indexFile="index.html"
 indexFileLoc="$location""$indexFile"
@@ -22,14 +29,7 @@ listingFileLoc="$location""$listingFile"
 newUploadsFile="New-Uploads.txt"
 newUploadsFileLoc="$location""$newUploadsFile"
 curTime=$(date '+%F %T')
-# If you don't want to use Pushover, leave pushoverAppKey and/or pushoverUserKey set to "".
-pushoverAppKey=""
-pushoverUserKey=""
-pushoverTitle="Night Uploader"
-pushoverURL=""
-pushoverURLTitle=""
-
-# Do not edit
+# Do not edit past this line
 runType=$1
 
 
@@ -78,30 +78,6 @@ if ! [[ -d "$location" ]] && ! [[ -d "$endLocation" ]] && ! [[ -d "$templateLoca
 then
   echo "$fail One or more of the folders and/or files does not exist."
   exit 1
-fi
-
-# Check if AWS is running already
-retryCount=0
-while ps aux | grep -v grep | grep "aws" > /dev/null
-do
-  if [[ "$retryCount" == 0 ]]
-  then
-    echo "$warning AWS is currently running. Waiting for AWS to finish to avoid issues."
-  fi
-  
-  if [[ "$retryCount" == 3600 ]]
-  then
-    echo "$fail Night Uploader failed to run due to an active AWS process taking longer than 3600 seconds."
-    exit 1
-  fi
-  
-  echo -n "."
-  retryCount=$((retryCount+1))
-  sleep 1
-done
-if [[ "$retryCount" != 0 ]]
-then
-  echo
 fi
 
 
@@ -183,6 +159,32 @@ moveFiles() {
   echo "$running Moving files to $endLocation..."
   mv "$location"* $endLocation
 }
+
+# Check if AWS is running already
+retryCount=0
+while ps aux | grep -v grep | grep "aws" > /dev/null
+do
+  if [[ "$retryCount" == 0 ]]
+  then
+    echo "$warning AWS is currently running. Waiting for AWS to finish to avoid issues."
+    pushoverSend "There is a process matching AWS already running on your system. To avoid conflict, this script will wait for it to finish."
+  fi
+  
+  if [[ "$retryCount" == $failTime ]]
+  then
+    echo "$fail Night Uploader failed to run due to an active AWS process taking longer than $failTime seconds."
+    pushoverSend "Night Uploader is canceling because the current running AWS process took longer than $failTime seconds."
+    exit 1
+  fi
+  
+  echo -n "."
+  retryCount=$((retryCount+1))
+  sleep 1
+done
+if [[ "$retryCount" != 0 ]]
+then
+  echo
+fi
 
 ##
 # Run Types and Workflows
