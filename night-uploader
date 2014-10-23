@@ -16,6 +16,10 @@ endLoc=""
 templateLoc=""
 temporaryDirLoc=""
 failTime=3600
+# The following is for AWS Elastic Transcoder. If you do not plan to use it, make sure the workflow is not loading the transcodeMedia function.
+etcMP4PresetID=""
+etcMP3PresetID=""
+etcPipelineID=""
 # If you don't want to use Pushover, leave pushoverAppKey and/or pushoverUserKey set to "".
 pushoverAppKey=""
 pushoverUserKey=""
@@ -168,10 +172,12 @@ moveFiles() {
 transcodeMedia() {
   # Transcode media on the CDN that does not have a copy in mp4 and mp3.
   echo "$running Finding media that needs to be transcoded"
+  pushoverSend "Transcoding required items."
 
   aws s3 ls s3://"$s3bucket"/ | grep -v PRE | awk -F' ' '{ print $4 }' > $listingFileLoc
 
   filesList=$(cat $listingFileLoc)
+  etcQueued=0
 
   while read mediaItem
   do
@@ -185,15 +191,26 @@ transcodeMedia() {
       if [[ "$(echo $filesList | grep $noExtItem).mp4" == "" ]]
       then
         # If there is no matches for the mp4 version, make a conversion.
-        # TODO: AWS ETC Command.
+        outputName="$noExtItem".mp4
+        # TODO: Uncommnet for release.
+        #aws elastictranscoder create-job --pipeline-id $etcPipelineID --input '{"Key":"$mediaItem"}' --outputs '{"Key":"$outputName","PresetId":"$etcMP4PresetID"}'
+        etcQueued=$(($etcQueued+1))
+        echo "$ok Created MP4 job for $mediaItem"
       fi
       if [[ "$(echo $filesList | grep $noExtItem).mp3" == "" ]]
       then
         # If there is no matches for the mp3 version, make a conversion.
-        # TODO: AWS ETC Command.
+        outputName="$noExtItem".mp3
+        # TODO: Uncommnet for release.
+        #aws elastictranscoder create-job --pipeline-id $etcPipelineID --input '{"Key":"$mediaItem"}' --outputs '{"Key":"$outputName","PresetId":"$etcMP3PresetID"}'
+        etcQueued=$(($etcQueued+1))
+        echo "$ok Created MP3 job for $mediaItem"
       fi
     fi
   done < $listingFileLoc
+
+  echo "$info Queued $etcQueued jobs."
+  pushoverSend "Queued $etcQueued transcoding jobs."
 }
 
 
@@ -267,7 +284,7 @@ then
   echo "$ok Running index workflow."
   pushoverSend "Running index workflow."
   
-  # Transcode
+  transcodeMedia
   # Media pages
   makeIndex
   cleanUp
