@@ -12,6 +12,9 @@
 - Changes a lot of the configuration variables.
 - Adds automatic Elastic Transcoding of media files.
 - Waits for transcoding to fully finish.
+- Fixes and/or logic in the variable check.
+- Adds file type icons to the listing based on extention.
+- More sleek interface made with Bootstrap and Font Awesome.
 
 ### v0.3.1
 
