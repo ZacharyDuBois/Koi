@@ -185,7 +185,7 @@ transcodeMedia() {
     noExtItem=$(echo $mediaItem | awk -F'.' '{ print $1 }')
 
     shopt -s nocasematch
-    if [[ "$mediaItem"  "(.*\.(mp4|mov|mkv|m4v)$)" ]]
+    if [[ "$mediaItem" =~ "(.*\.(mp4|mov|mkv|m4v)$)" ]]
     then
       # Find all the video files.
       if [[ "$(echo $filesList | grep $noExtItem).mp4" == "" ]]
@@ -220,7 +220,7 @@ transcodeMedia() {
     then
       echo "$running Waiting for all jobs to be progressing."
     fi
-    etcWaitCount=$((etcWaitCount+1))
+    etcWaitCount=$(($etcWaitCount+1))
     sleep 5
   done
   echo "$info Wait looped $etcWaitCount times."
@@ -232,7 +232,7 @@ transcodeMedia() {
     then
       echo "$running Waiting for all jobs to be compleate."
     fi
-    etcWaitCount=$((etcWaitCount+1))
+    etcWaitCount=$(($etcWaitCount+1))
     sleep 5
   done
   echo "$info Wait looped $etcWaitCount times."
