@@ -191,6 +191,13 @@ moveFiles() {
 
 transcodeMedia() {
   # Transcode media on the CDN that does not have a copy in mp4 and mp3.
+
+  if [[ "$etcPipelineID" == "" ]] || [[ "$etcMP3PresetID" == "" ]] || [[ "$etcMP4PresetID" == "" ]]
+  then
+    echo "$fail The ETC variables are not setup corrctly."
+    exit 1
+  fi
+
   echo "$running Finding media that needs to be transcoded"
   pushoverSend "Transcoding required items."
 
