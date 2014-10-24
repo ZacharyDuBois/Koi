@@ -136,7 +136,27 @@ makeIndex() {
   while read listItem
   do
     numberOfFiles=$(($numberOfFiles+1))
-    echo "        <li><a href=\"/"$listItem"\">"$listItem"</a></li>" >> $indexFileLoc
+
+    # Set the icon.
+    shopt -s nocasematch
+    if [[ "$listItem" =~ "(.*\.(mp4|mov|mkv|m4v)$)" ]]
+    then
+      itemIcon="fa-file-video-o"
+    elif [[ "$listItem" =~ "(.*\.(mp3|acc|ogg|wav)$)" ]]
+    then
+      itemIcon="fa-file-audio-o"
+    elif [[ "$listItem" =~ "(.*\.(png|jpg|jpeg|tiff|gif|svg|ico)$)" ]]
+    then
+      itemIcon="fa-file-image-o"
+    elif [[ "$listItem" =~ "(.*\.(zip|tar|gz)$)" ]]
+    then
+      itemIcon="fa-file-archive-o"
+    else
+      itemIcon="fa-file-o"
+    fi
+
+    echo "        <li><a href=\"/"$listItem"\"><i class=\"fa "$itemIcon"\"></i> "$listItem"</a></li>" >> $indexFileLoc
+
   done < $listingFileLoc
   
   echo "      </ul>" >> $indexFileLoc
