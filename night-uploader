@@ -72,14 +72,14 @@ then
 fi
 
 # Check for variables set correctly
-if [[ "$loc" == "" ]] && [[ "$s3bucket" == "" ]] && [[ "$endLoc" == "" ]] && [[ "$templateLoc" == "" ]] && [[ "$temporaryDirLoc" == "" ]] && [[ "$indexFile" == "" ]] && [[ "$indexFileLoc" == "" ]] && [[ "$listingFile" == "" ]] && [[ "$listingFileLoc" == "" ]] && [[ "$newUploadsFile" == "" ]] && [[ "$newUploadsFileLoc" == "" ]] && [[ "$curTime" == "" ]]
+if [[ "$loc" == "" ]] || [[ "$s3bucket" == "" ]] || [[ "$endLoc" == "" ]] || [[ "$templateLoc" == "" ]] || [[ "$temporaryDirLoc" == "" ]] || [[ "$indexFile" == "" ]] || [[ "$indexFileLoc" == "" ]] || [[ "$listingFile" == "" ]] || [[ "$listingFileLoc" == "" ]] || [[ "$newUploadsFile" == "" ]] || [[ "$newUploadsFileLoc" == "" ]] || [[ "$curTime" == "" ]]
 then
   echo "$fail You have not set all the required variables in the variables block. Please edit them with the correct details."
   exit 1
 fi
 
 # Check if locs and files exist.
-if ! [[ -d "$loc" ]] && ! [[ -d "$endLoc" ]] && ! [[ -d "$templateLoc" ]] && ! [[ -d "$temporaryDirLoc" ]]&& ! [[ -r "$templateLoc""aftercontent.html" ]] && ! [[ -r "$templateLoc""footer.html" ]] && ! [[ -r "$templateLoc""head.html" ]]
+if ! [[ -d "$loc" ]] || ! [[ -d "$endLoc" ]] || ! [[ -d "$templateLoc" ]] || ! [[ -d "$temporaryDirLoc" ]] || ! [[ -r "$templateLoc""aftercontent.html" ]] || ! [[ -r "$templateLoc""footer.html" ]] || ! [[ -r "$templateLoc""head.html" ]]
 then
   echo "$fail One or more of the folders and/or files does not exist."
   exit 1
@@ -92,7 +92,7 @@ fi
 
 pushoverSend() {
   message=$1
-  if [[ "$pushoverAppKey" != "" ]] && [[ "$pushoverUserKey" != "" ]]
+  if [[ "$pushoverAppKey" != "" ]] || [[ "$pushoverUserKey" != "" ]]
   then
     curl -s --form-string "token=$pushoverAppKey" --form-string "user=$pushoverUserKey" --form-string "url=$pushoverURL" --form-string "url_title=$pushoverURLTitle" --form-string "priority=0" --form-string "title=$pushoverTitle" --form-string "message=$message" https://api.pushover.net/1/messages.json > /dev/null
     pushoverStatus=$?
