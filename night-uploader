@@ -131,24 +131,24 @@ makeIndex() {
   aws s3 ls s3://"$s3bucket"/ | grep -v PRE | awk -F' ' '{ print $4 }' > $listingFileLoc
   sort -f $listingFileLoc -o $listingFileLoc
   cat "$templateLoc""head.html" > $indexFileLoc
-  echo "  <ul>" >> $indexFileLoc
+  echo "      <ul>" >> $indexFileLoc
   
   while read listItem
   do
     numberOfFiles=$(($numberOfFiles+1))
-    echo "    <li><a href=\"/"$listItem"\">"$listItem"</a></li>" >> $indexFileLoc
+    echo "        <li><a href=\"/"$listItem"\">"$listItem"</a></li>" >> $indexFileLoc
   done < $listingFileLoc
   
-  echo "  </ul>" >> $indexFileLoc
+  echo "      </ul>" >> $indexFileLoc
   
   cat "$templateLoc""aftercontent.html" >> $indexFileLoc
-  echo "  <p><code>"$numberOfFiles" Items</code></p>" >> $indexFileLoc
-  echo "  <p>Index Last Updated: <code>"$curTime"</code></p>" >> $indexFileLoc
-  echo "  <p>Files uploaded and generated with <a href=\"https://bitbucket.org/Zachary_DuBois/night-uploader\">Night Uploader</a> <code>"$version"</code></p>" >> $indexFileLoc
+  echo "      <p><code>"$numberOfFiles" Items</code></p>" >> $indexFileLoc
+  echo "      <p>Index Last Updated: <code>"$curTime"</code></p>" >> $indexFileLoc
+  echo "      <p>Powered by <a href=\"https://bitbucket.org/Zachary_DuBois/night-uploader\">Night Uploader</a> <code>"$version"</code></p>" >> $indexFileLoc
   cat "$templateLoc""footer.html" >> $indexFileLoc
   
   # Upload Index
-  echo "$running Uploading Index."
+  echo "$running Uploading index."
   aws s3 cp $indexFileLoc s3://"$s3bucket"/"$indexFile" --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
 }
 
