@@ -145,6 +145,12 @@ makeIndex() {
     elif [[ "$listItem" =~ .*\.(mp3|acc|ogg|wav)$ ]]
     then
       itemIcon="fa-file-audio-o"
+    elif [[ "$listItem" =~ .*\.(html|htm|xml|py|c)$ ]]
+    then
+      itemIcon="fa-file-code-o"
+    elif [[ "$listItem" =~ .*\.(pdf)$ ]]
+    then
+      itemIcon="fa-file-pdf-o"
     elif [[ "$listItem" =~ .*\.(png|jpg|jpeg|tiff|gif|svg|ico)$ ]]
     then
       itemIcon="fa-file-image-o"
