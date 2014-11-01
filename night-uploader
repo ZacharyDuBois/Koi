@@ -234,7 +234,6 @@ transcodeMedia() {
       then
         # If there is no matches for the mp3 version, make a conversion.
         outputName=$noExtItem$mp3
-        # TODO: Uncommnet for release.
         aws elastictranscoder create-job --pipeline-id $etcPipelineID --input Key=$mediaItem --outputs \{\"Key\":\"$outputName\",\"PresetId\":\"$etcMP3PresetID\"\}
         etcQueued=$(($etcQueued+1))
         echo "$ok Created MP3 job for $mediaItem to $outputName"
@@ -248,7 +247,6 @@ transcodeMedia() {
       then
         # If there is no matches for the mp4 version, make a conversion.
         outputName=$noExtItem$mp4
-        # TODO: Uncommnet for release.
         aws elastictranscoder create-job --pipeline-id $etcPipelineID --input Key=$mediaItem --outputs \{\"Key\":\"$outputName\",\"PresetId\":\"$etcMP4PresetID\"\}
         etcQueued=$(($etcQueued+1))
         echo "$ok Created MP4 job for $mediaItem to $outputName"
@@ -257,7 +255,6 @@ transcodeMedia() {
       then
         # If there is no matches for the mp3 version, make a conversion.
         outputName=$noExtItem$mp3
-        # TODO: Uncommnet for release.
         aws elastictranscoder create-job --pipeline-id $etcPipelineID --input Key=$mediaItem --outputs \{\"Key\":\"$outputName\",\"PresetId\":\"$etcMP3PresetID\"\}
         etcQueued=$(($etcQueued+1))
         echo "$ok Created MP3 job for $mediaItem to $outputName"
