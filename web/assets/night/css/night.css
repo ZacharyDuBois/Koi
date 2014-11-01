@@ -10,3 +10,12 @@ body {
   padding-top: 70px;
   padding-bottom: 70px;
 }
+
+video {
+  width: 100%    !important;
+  height: auto   !important;
+}
+
+audio {
+  width: 100%    !important;
+}

@@ -13,7 +13,7 @@
   <title>Index (ﾉ◕ヮ◕)ﾉ*:･ ﾟ✧</title>
   <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
-  <link rel="stylesheet" href="assets/media-element/css/mediaelementplayer.css">
+  <link rel="stylesheet" href="assets/media-element/mediaelementplayer.css">
   <link rel="stylesheet" href="assets/night/css/night.css">
 </head>
 <body>
@@ -47,13 +47,25 @@
       </h1>
     </div>
   </div>
+  <div class="row">
+    <div class="col-md-8 col-md-offset-2">
+      <p>This is a nicer looking page to listen or watch your media when using Night Uploader.</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <video controls="controls" preload="none">
+        <source type="video/mp4" src="{video}"/>
+      </video>
+    </div>
+  </div>
 </div>
 <!-- /Body Content -->
 
 </body>
 <script src="assets/jquery/js/jquery-2.1.1.min.js"></script>
 <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-<script src="assets/media-element/js/mediaelement-and-player.min.js"></script>
+<script src="assets/media-element/mediaelement-and-player.min.js"></script>
 <script src="assets/night/js/night.js"></script>
 <script type="text/javascript">
   $('video,audio').mediaelementplayer(/* Options */);
