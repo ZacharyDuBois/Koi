@@ -13,6 +13,7 @@
   <title>Index (ﾉ◕ヮ◕)ﾉ*:･ ﾟ✧</title>
   <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
+  <link rel="stylesheet" href="assets/media-element/css/mediaelementplayer.css">
   <link rel="stylesheet" href="assets/night/css/night.css">
 </head>
 <body>
@@ -41,7 +42,9 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-md-10 col-md-offset-1">
-      <h1 class="page-header"><i class="fa fa-play-circle-o"></i> {File Name} <small>Media Page</small></h1>
+      <h1 class="page-header"><i class="fa fa-play-circle-o"></i> {File Name}
+        <small>Media Page</small>
+      </h1>
     </div>
   </div>
 </div>
@@ -50,8 +53,9 @@
 </body>
 <script src="assets/jquery/js/jquery-2.1.1.min.js"></script>
 <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+<script src="assets/media-element/js/mediaelement-and-player.min.js"></script>
 <script src="assets/night/js/night.js"></script>
 <script type="text/javascript">
-
+  $('video,audio').mediaelementplayer(/* Options */);
 </script>
 </html>
