@@ -218,6 +218,8 @@ transcodeMedia() {
 
   filesList=$(cat $listingFileLoc)
   etcQueued=0
+  mp3=".mp3"
+  mp4=".mp4"
 
   while read mediaItem
   do
@@ -225,40 +227,40 @@ transcodeMedia() {
     noExtItem=$(echo $mediaItem | awk -F'.' '{ print $1 }')
 
     shopt -s nocasematch
-    if [[ "mediaItem" =~ $formatAudio ]]
+    if [[ "$mediaItem" =~ $formatAudio ]]
     then
       # Find all audio files
-      if [[ "$(echo $filesList | grep $noExtItem).mp3" == "" ]]
+      if [[ $(echo $filesList | grep $noExtItem$mp3) == "" ]]
       then
-        # If there is no matches for the mp4 version, make a conversion.
-        outputName="$noExtItem".mp3
+        # If there is no matches for the mp3 version, make a conversion.
+        outputName=$noExtItem$mp3
         # TODO: Uncommnet for release.
-        #aws elastictranscoder create-job --pipeline-id $etcPipelineID --input '{"Key":"$mediaItem"}' --outputs '{"Key":"$outputName","PresetId":"$etcMP$PresetID"}'
+        aws elastictranscoder create-job --pipeline-id $etcPipelineID --input Key=$mediaItem --outputs \{\"Key\":\"$outputName\",\"PresetId\":\"$etcMP3PresetID\"\}
         etcQueued=$(($etcQueued+1))
-        echo "$ok Created MP3 job for $mediaItem"
+        echo "$ok Created MP3 job for $mediaItem to $outputName"
       fi
     fi
 
     if [[ "$mediaItem" =~ $formatVideo ]]
     then
       # Find all the video files.
-      if [[ "$(echo $filesList | grep $noExtItem).mp4" == "" ]]
+      if [[ $(echo $filesList | grep $noExtItem$mp4) == "" ]]
       then
         # If there is no matches for the mp4 version, make a conversion.
-        outputName="$noExtItem".mp4
+        outputName=$noExtItem$mp4
         # TODO: Uncommnet for release.
-        #aws elastictranscoder create-job --pipeline-id $etcPipelineID --input '{"Key":"$mediaItem"}' --outputs '{"Key":"$outputName","PresetId":"$etcMP4PresetID"}'
+        aws elastictranscoder create-job --pipeline-id $etcPipelineID --input Key=$mediaItem --outputs \{\"Key\":\"$outputName\",\"PresetId\":\"$etcMP4PresetID\"\}
         etcQueued=$(($etcQueued+1))
-        echo "$ok Created MP4 job for $mediaItem"
+        echo "$ok Created MP4 job for $mediaItem to $outputName"
       fi
-      if [[ "$(echo $filesList | grep $noExtItem).mp3" == "" ]]
+      if [[ $(echo $filesList | grep $noExtItem$mp3) == "" ]]
       then
         # If there is no matches for the mp3 version, make a conversion.
-        outputName="$noExtItem".mp3
+        outputName=$noExtItem$mp3
         # TODO: Uncommnet for release.
-        #aws elastictranscoder create-job --pipeline-id $etcPipelineID --input '{"Key":"$mediaItem"}' --outputs '{"Key":"$outputName","PresetId":"$etcMP3PresetID"}'
+        aws elastictranscoder create-job --pipeline-id $etcPipelineID --input Key=$mediaItem --outputs \{\"Key\":\"$outputName\",\"PresetId\":\"$etcMP3PresetID\"\}
         etcQueued=$(($etcQueued+1))
-        echo "$ok Created MP3 job for $mediaItem"
+        echo "$ok Created MP3 job for $mediaItem to $outputName"
       fi
     fi
   done < $listingFileLoc
