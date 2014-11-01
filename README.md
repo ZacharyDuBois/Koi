@@ -10,7 +10,6 @@
 - Creates an automatic index file that lists everything (minus folders) located in the root of your S3 bucket.
 - Index file is customizable to fit your needs.
 - Checks to see if there is already an instance of AWS running.
-- Creates a page for videos and audio to be watched on instead of loading the raw video or audio.
 - Automatic use of the ETC (Elastic Transcoder) to render your media into various formats (Follow the `INSTALLATION.md` for setting up the correct pipeline).
 
 ## Requirements

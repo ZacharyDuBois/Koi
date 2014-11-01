@@ -337,13 +337,12 @@ if [[ "$runType" == "" ]] || [[ "$runType" == "1" ]]
 then
   if [[ "$(ls $loc)" == "" ]]
     then
-    # Standard run w/ changes. transcode media, make media pages, index.
+    # Standard run w/o changes. transcode media, make media pages, index.
     # No files to upload, reindex, see if anything needs transcoding, or needs media pages. Then, finish.
     echo "$ok No files found for upload."
     pushoverSend "No files found for upload. Reindexing."
 
-    # Transcode
-    # Media pages
+    transcodeMedia
     makeIndex
     cleanUp
   else
@@ -356,7 +355,6 @@ then
     cleanUp
     moveFiles
     transcodeMedia
-    # Media pages
     makeIndex
     cleanUp
   fi
@@ -367,7 +365,6 @@ then
   pushoverSend "Running index workflow."
   
   transcodeMedia
-  # Media pages
   makeIndex
   cleanUp
 else
