@@ -29,3 +29,4 @@
 
 - You currently need to only use filenames containing no special characters or spaces.
 - Filenames cannot contain a dot except for the extension.
+- Notify me of any others right away :)
