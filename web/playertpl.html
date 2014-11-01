@@ -13,7 +13,7 @@
   <title>Index (ﾉ◕ヮ◕)ﾉ*:･ ﾟ✧</title>
   <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
   <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css">
-  <link rel="stylesheet" href="assets/media-element/mediaelementplayer.css">
+  <link rel="stylesheet" href="assets/videojs/video-js.min.css">
   <link rel="stylesheet" href="assets/night/css/night.css">
 </head>
 <body>
@@ -54,8 +54,9 @@
   </div>
   <div class="row">
     <div class="col-md-10 col-md-offset-1">
-      <video controls="controls" preload="none">
-        <source type="video/mp4" src="{video}"/>
+      <video class="video-js vjs-default-skin" controls preload="none" data-setup="{}">
+        <source src="http://video-js.zencoder.com/oceans-clip.mp4" type='video/mp4'/>
+        <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
       </video>
     </div>
   </div>
@@ -65,9 +66,9 @@
 </body>
 <script src="assets/jquery/js/jquery-2.1.1.min.js"></script>
 <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-<script src="assets/media-element/mediaelement-and-player.min.js"></script>
+<script src="assets/videojs/video.js"></script>
 <script src="assets/night/js/night.js"></script>
 <script type="text/javascript">
-  $('video,audio').mediaelementplayer(/* Options */);
+  videojs.options.flash.swf = "video-js.swf";
 </script>
 </html>
