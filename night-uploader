@@ -335,6 +335,7 @@ echo "$notice Starting workflow ID $runType."
 
 if [[ "$runType" == "" ]] || [[ "$runType" == "1" ]]
 then
+  runType=1
   if [[ "$(ls $loc)" == "" ]]
     then
     # Standard run w/o changes. transcode media, make media pages, index.
@@ -360,6 +361,7 @@ then
   fi
 elif [[ "$runType" == "2" ]]
 then
+  runType=2
   # Index run transcode media, make media pages, index.
   echo "$ok Running index workflow."
   pushoverSend "Running index workflow."
