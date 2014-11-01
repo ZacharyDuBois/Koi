@@ -225,7 +225,21 @@ transcodeMedia() {
     noExtItem=$(echo $mediaItem | awk -F'.' '{ print $1 }')
 
     shopt -s nocasematch
-    if [[ "$mediaItem" =~ .*\.(mp4|mov|mkv|m4v)$ ]]
+    if [[ "mediaItem" =~ $formatAudio ]]
+    then
+      # Find all audio files
+      if [[ "$(echo $filesList | grep $noExtItem).mp3" == "" ]]
+      then
+        # If there is no matches for the mp4 version, make a conversion.
+        outputName="$noExtItem".mp3
+        # TODO: Uncommnet for release.
+        #aws elastictranscoder create-job --pipeline-id $etcPipelineID --input '{"Key":"$mediaItem"}' --outputs '{"Key":"$outputName","PresetId":"$etcMP$PresetID"}'
+        etcQueued=$(($etcQueued+1))
+        echo "$ok Created MP3 job for $mediaItem"
+      fi
+    fi
+
+    if [[ "$mediaItem" =~ $formatVideo ]]
     then
       # Find all the video files.
       if [[ "$(echo $filesList | grep $noExtItem).mp4" == "" ]]
