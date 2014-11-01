@@ -1,5 +1,21 @@
 # Change Log
 
+## v0.4
+
+- Moves most tasks into functions.
+- Better output logging.
+- Adds different `runType`s.
+- Changes generation files names and extensions.
+- AWS process conflict now has a variable fail time and sends notifications via Pushover.
+- Adds workflows so you can create a custom setup easily.
+- Adds a separate place for temporary files.
+- Changes a lot of the configuration variables.
+- Adds automatic Elastic Transcoding of media files.
+- Waits for transcoding to fully finish.
+- Fixes and/or logic in the variable check.
+- Adds file type icons to the listing based on extention.
+- More sleek interface made with Bootstrap and Font Awesome.
+
 ### v0.3.1
 
 - Re-Licensed the code correctly this time. Now it is correctly under MIT.
@@ -40,4 +56,3 @@
 ### v0.1
 
 - Initial release.
-

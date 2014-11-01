@@ -1,0 +1,21 @@
+/*
+ * Night Uploader - https://github.com/ZacharyDuBois/Night-Uploader
+ */
+
+/**
+ * CSS for Night Uploader.
+ */
+
+body {
+  padding-top: 70px;
+  padding-bottom: 70px;
+}
+
+video {
+  width: 100%    !important;
+  height: auto   !important;
+}
+
+audio {
+  width: 100%    !important;
+}

@@ -2,32 +2,60 @@
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # Night Updater
 # https://github.com/ZacharyDuBois/Night-Uploader
-version="v0.3"
+version="v0.4"
 
 
 ##
 # Variables
 ##
 
-# All locations should be the full path to the directories with a trailing slash.
-location=""
+# All variables ending with Loc are full paths to directories or files. The also must contain a trailing slash if they are a direcotry.
+loc=""
 s3bucket=""
-endLocation=""
-templateLocation=""
-# The next 7 are not recommend to edit but you may if you'd like.
-indexFile="index.html"
-indexFileLoc="$location""$indexFile"
-listingFile="tmp"
-listingFileLoc="$location""$listingFile"
-newUploadsFile="New-Uploads.txt"
-newUploadsFileLoc="$location""$newUploadsFile"
-curTime=$(date '+%F %T')
+endLoc=""
+templateLoc=""
+temporaryDirLoc=""
+failTime=3600
+# The following is for AWS Elastic Transcoder. If you do not plan to use it, make sure the workflow is not loading the transcodeMedia function.
+etcMP4PresetID=""
+etcMP3PresetID=""
+etcPipelineID=""
 # If you don't want to use Pushover, leave pushoverAppKey and/or pushoverUserKey set to "".
 pushoverAppKey=""
 pushoverUserKey=""
 pushoverTitle="Night Uploader"
 pushoverURL=""
 pushoverURLTitle=""
+# File extentions and formats below.
+formatVideo=".*\.(mp4|mov|mkv|m4v|ogv|avi)$"
+formatAudio=".*\.(mp3|acc|ogg|wav|m4a|ogg|oga|opus)$"
+formatCode=".*\.(html|htm|xml|py|c)$"
+formatPDF=".*\.(pdf)$"
+formatImage=".*\.(png|jpg|jpeg|tiff|gif|svg|ico)$"
+formatArchive=".*\.(zip|tar|gz)$"
+# The next 7 are not recommend to edit but you may if you'd like.
+indexFile="index.html"
+indexFileLoc="$temporaryDirLoc""$indexFile"
+listingFile="tmp"
+listingFileLoc="$temporaryDirLoc""$listingFile"
+newUploadsFile="New-Uploads.txt"
+newUploadsFileLoc="$temporaryDirLoc""$newUploadsFile"
+curTime=$(date '+%F %T')
+# Do not edit past this line
+runType=$1
+
+
+##
+# Message Types
+##
+
+fail="[$(tput setaf 1)FAIL$(tput sgr0)]"
+ok="[$(tput setaf 2)OK$(tput sgr0)]"
+running="[$(tput setaf 3)*$(tput sgr0)]"
+notice="[$(tput setaf 3)NOTICE$(tput sgr0)]"
+warning="[$(tput setaf 3)WARNING$(tput sgr0)]"
+info="[$(tput setaf 6)INFO$(tput sgr0)]"
+finish="[$(tput setaf 4)DONE$(tput sgr0)]"
 
 
 ##
@@ -35,50 +63,33 @@ pushoverURLTitle=""
 ##
 
 # Check for root
-if [[ "$(id -u)" == "0" ]]
+if [[ "$(id -u)" == 0 ]]
 then
-  echo "Do not run this script as root."
+  echo "$fail Do not run this script as root."
   exit 1
 fi
 
 # Check for AWS CLI
 which aws > /dev/null
 checkForAWS=$?
-if [[ "$checkForAWS" != "0" ]]
+if [[ "$checkForAWS" != 0 ]]
 then 
-  echo "You need AWS CLI to run this script."
+  echo "$fail You need AWS CLI to run this script."
   exit 1
 fi
 
 # Check for variables set correctly
-if [[ "$location" == "" ]] && [[ "$s3bucket" == "" ]] && [[ "$endLocation" == "" ]] && [[ "$templateLocation" == "" ]] && [[ "$indexFile" == "" ]] && [[ "$indexFileLoc" == "" ]] && [[ "$listingFile" == "" ]] && [[ "$listingFileLoc" == "" ]] && [[ "$newUploadsFile" == "" ]] && [[ "$newUploadsFileLoc" == "" ]] && [[ "$curTime" == "" ]]
+if [[ "$loc" == "" ]] || [[ "$s3bucket" == "" ]] || [[ "$endLoc" == "" ]] || [[ "$templateLoc" == "" ]] || [[ "$temporaryDirLoc" == "" ]] || [[ "$indexFile" == "" ]] || [[ "$indexFileLoc" == "" ]] || [[ "$listingFile" == "" ]] || [[ "$listingFileLoc" == "" ]] || [[ "$newUploadsFile" == "" ]] || [[ "$newUploadsFileLoc" == "" ]] || [[ "$curTime" == "" ]]
 then
-  echo "You have not set all the required variables in the variables block. Please edit them with the correct details."
+  echo "$fail You have not set all the required variables in the variables block. Please edit them with the correct details."
   exit 1
 fi
 
-# Check if locations and files exist.
-if ! [[ -d "$location" ]] && ! [[ -d "$endLocation" ]] && ! [[ -d "$templateLocation" ]] && ! [[ -r "$templateLocation""afterlist" ]] && ! [[ -r "$templateLocation""footer" ]] && ! [[ -r "$templateLocation""head" ]]
+# Check if locs and files exist.
+if ! [[ -d "$loc" ]] || ! [[ -d "$endLoc" ]] || ! [[ -d "$templateLoc" ]] || ! [[ -d "$temporaryDirLoc" ]] || ! [[ -r "$templateLoc""index/""aftercontent.html" ]] || ! [[ -r "$templateLoc""index/""footer.html" ]] || ! [[ -r "$templateLoc""index/""head.html" ]]
 then
-  echo "One or more of the folders and/or files does not exist."
+  echo "$fail One or more of the folders and/or files does not exist."
   exit 1
-fi
-
-# Check if AWS is running already
-retryCount=0
-while ps aux | grep -v grep | grep "aws" > /dev/null
-do
-  if [[ "$retryCount" == 0 ]]
-  then
-    echo "AWS is currently running. Waiting for AWS to finish to avoid issues."
-  fi
-  echo -n "."
-  retryCount=$((retryCount+1))
-  sleep 5
-done
-if [[ "$retryCount" != 0 ]]
-then
-  echo
 fi
 
 
@@ -88,81 +99,288 @@ fi
 
 pushoverSend() {
   message=$1
-  if [[ "$pushoverAppKey" != "" ]] && [[ "$pushoverUserKey" != "" ]]
+  if [[ "$pushoverAppKey" != "" ]] || [[ "$pushoverUserKey" != "" ]]
   then
     curl -s --form-string "token=$pushoverAppKey" --form-string "user=$pushoverUserKey" --form-string "url=$pushoverURL" --form-string "url_title=$pushoverURLTitle" --form-string "priority=0" --form-string "title=$pushoverTitle" --form-string "message=$message" https://api.pushover.net/1/messages.json > /dev/null
     pushoverStatus=$?
-    if [[ "$pushoverStatus" == "0" ]]
+    if [[ "$pushoverStatus" == 0 ]]
     then
-      echo "Pushover message sent successfully: $message"
+      echo "$info Pushover message sent successfully: $message"
     else
-      echo "Pushover failed to send message: $message"
+      echo "$warning Pushover failed to send message: $message"
     fi
   else
-    echo "No Pushover key set to send message: $message"
+    echo "$info No Pushover key set to send message: $message"
   fi
 }
 
-if [[ "$(ls $location)" == "" ]]
-then
-  # No Files
-  echo "No files for upload, exiting."
-  pushoverSend "No uploads tonight! Enjoy!"
-else
-  # Files
-  echo "Files found, uploading $location ==> s3://"$s3bucket"/"
-  pushoverSend "Starting to upload files to s3://"$s3bucket"/. Internet may slow down a bit."
-  
+makeNewFilesList() {
   # Make a new files list
-  echo "Generating new files list."
-  ls $location | grep -v $newUploadsFile > $newUploadsFileLoc
+  echo "$running Generating new files list."
+  ls $loc > $newUploadsFileLoc
   echo "Last Updated: $curTime" >> $newUploadsFileLoc
-  
+}
+
+uploadFiles() {
   # Upload
-  echo "Starting upload to s3://"$s3bucket"/"
-  aws s3 cp $location s3://"$s3bucket"/ --recursive --exclude ".*" --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
-  
+  echo "$running Starting upload to s3://"$s3bucket"/"
+  pushoverSend "Starting to upload files to s3://"$s3bucket"/."
+  aws s3 cp $loc s3://"$s3bucket"/ --recursive --exclude ".*" --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
+}
+
+makeIndex() {
   # Generate Index
-  echo "Generating index file."
+  echo "$running Generating index file."
   pushoverSend "Generating index file."
+  
   numberOfFiles=0
+  
   aws s3 ls s3://"$s3bucket"/ | grep -v PRE | awk -F' ' '{ print $4 }' > $listingFileLoc
   sort -f $listingFileLoc -o $listingFileLoc
-  cat "$templateLocation""head" > $indexFileLoc
+  cat "$templateLoc""index/""head.html" > $indexFileLoc
+  echo "      <ul>" >> $indexFileLoc
   
   while read listItem
   do
     numberOfFiles=$(($numberOfFiles+1))
-    echo "    <li><a href=\"/"$listItem"\">"$listItem"</a></li>" >> $indexFileLoc
+
+    # Set the icon.
+    shopt -s nocasematch
+    if [[ "$listItem" =~ $formatVideo ]]
+    then
+      itemIcon="fa-file-video-o"
+    elif [[ "$listItem" =~ $formatAudio ]]
+    then
+      itemIcon="fa-file-audio-o"
+    elif [[ "$listItem" =~ $formatCode ]]
+    then
+      itemIcon="fa-file-code-o"
+    elif [[ "$listItem" =~ $formatPDF ]]
+    then
+      itemIcon="fa-file-pdf-o"
+    elif [[ "$listItem" =~ $formatImage ]]
+    then
+      itemIcon="fa-file-image-o"
+    elif [[ "$listItem" =~ $formatArchive ]]
+    then
+      itemIcon="fa-file-archive-o"
+    else
+      itemIcon="fa-file-o"
+    fi
+
+    echo "        <li><a href=\"/"$listItem"\"><i class=\"fa "$itemIcon"\"></i> "$listItem"</a></li>" >> $indexFileLoc
+
   done < $listingFileLoc
   
-  cat "$templateLocation""afterlist" >> $indexFileLoc
-  echo "  <p><code>"$numberOfFiles" Items</code></p>" >> $indexFileLoc
-  echo "  <p>Index Last Updated: <code>"$curTime"</code></p>" >> $indexFileLoc
-  echo "  <p>Files uploaded and generated with <a href=\"https://bitbucket.org/Zachary_DuBois/night-uploader\">Night Uploader</a> <code>"$version"</code></p>" >> $indexFileLoc
-  cat "$templateLocation""footer" >> $indexFileLoc
+  echo "      </ul>" >> $indexFileLoc
+  
+  cat "$templateLoc""index/""aftercontent.html" >> $indexFileLoc
+  echo "      <p><code>"$numberOfFiles" Items</code></p>" >> $indexFileLoc
+  echo "      <p>Index Last Updated: <code>"$curTime"</code></p>" >> $indexFileLoc
+  echo "      <p>Powered by <a href=\"https://bitbucket.org/Zachary_DuBois/night-uploader\">Night Uploader</a> <code>"$version"</code></p>" >> $indexFileLoc
+  cat "$templateLoc""index/""footer.html" >> $indexFileLoc
   
   # Upload Index
-  echo "Uploading Index."
+  echo "$running Uploading index."
   aws s3 cp $indexFileLoc s3://"$s3bucket"/"$indexFile" --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
+}
+
+cleanUp() {
+  echo "$running Cleaning up."
+  if [[ "$temporaryDirLoc" != "" ]]
+  then
+    rm "$temporaryDirLoc"*
+  fi
+}
+
+moveFiles() {
+  # Move them to the done loc.
+  echo "$running Moving files to $endLoc..."
+  if [[ "$loc" != "" ]]
+  then
+    mv "$loc"* $endLoc
+  fi
+}
+
+transcodeMedia() {
+  # Transcode media on the CDN that does not have a copy in mp4 and mp3.
+
+  if [[ "$etcPipelineID" == "" ]] || [[ "$etcMP3PresetID" == "" ]] || [[ "$etcMP4PresetID" == "" ]]
+  then
+    echo "$fail The ETC variables are not setup corrctly."
+    exit 1
+  fi
+
+  echo "$running Finding media that needs to be transcoded"
+  pushoverSend "Transcoding required items."
+
+  aws s3 ls s3://"$s3bucket"/ | grep -v PRE | awk -F' ' '{ print $4 }' > $listingFileLoc
+
+  filesList=$(cat $listingFileLoc)
+  etcQueued=0
+  mp3=".mp3"
+  mp4=".mp4"
+
+  while read mediaItem
+  do
+    # Remove the extention - TODO: Fix the fact that you cannot have files with dots
+    noExtItem=$(echo $mediaItem | awk -F'.' '{ print $1 }')
+
+    shopt -s nocasematch
+    if [[ "$mediaItem" =~ $formatAudio ]]
+    then
+      # Find all audio files
+      if [[ $(echo $filesList | grep $noExtItem$mp3) == "" ]]
+      then
+        # If there is no matches for the mp3 version, make a conversion.
+        outputName=$noExtItem$mp3
+        aws elastictranscoder create-job --pipeline-id $etcPipelineID --input Key=$mediaItem --outputs \{\"Key\":\"$outputName\",\"PresetId\":\"$etcMP3PresetID\"\}
+        etcQueued=$(($etcQueued+1))
+        echo "$ok Created MP3 job for $mediaItem to $outputName"
+      fi
+    fi
+
+    if [[ "$mediaItem" =~ $formatVideo ]]
+    then
+      # Find all the video files.
+      if [[ $(echo $filesList | grep $noExtItem$mp4) == "" ]]
+      then
+        # If there is no matches for the mp4 version, make a conversion.
+        outputName=$noExtItem$mp4
+        aws elastictranscoder create-job --pipeline-id $etcPipelineID --input Key=$mediaItem --outputs \{\"Key\":\"$outputName\",\"PresetId\":\"$etcMP4PresetID\"\}
+        etcQueued=$(($etcQueued+1))
+        echo "$ok Created MP4 job for $mediaItem to $outputName"
+      fi
+      if [[ $(echo $filesList | grep $noExtItem$mp3) == "" ]]
+      then
+        # If there is no matches for the mp3 version, make a conversion.
+        outputName=$noExtItem$mp3
+        aws elastictranscoder create-job --pipeline-id $etcPipelineID --input Key=$mediaItem --outputs \{\"Key\":\"$outputName\",\"PresetId\":\"$etcMP3PresetID\"\}
+        etcQueued=$(($etcQueued+1))
+        echo "$ok Created MP3 job for $mediaItem to $outputName"
+      fi
+    fi
+  done < $listingFileLoc
+
+  echo "$info Queued $etcQueued jobs."
+  pushoverSend "Queued $etcQueued transcoding jobs."
+
+  # Wait for all of them to compleate.
+  etcWaitCount=0
+  while aws elastictranscoder list-jobs-by-status --status Submitted | grep $etcPipelineID > /dev/null
+  do
+    if [[ "$etcWaitCount" == 0 ]]
+    then
+      echo "$running Waiting for all jobs to be progressing."
+    fi
+    etcWaitCount=$(($etcWaitCount+1))
+    sleep 5
+  done
+  echo "$info Wait looped $etcWaitCount times."
+
+  etcWaitCount=0
+  while aws elastictranscoder list-jobs-by-status --status Progressing | grep $etcPipelineID > /dev/null
+  do
+    if [[ "$etcWaitCount" == 0 ]]
+    then
+      echo "$running Waiting for all jobs to be compleate."
+    fi
+    etcWaitCount=$(($etcWaitCount+1))
+    sleep 5
+  done
+  echo "$info Wait looped $etcWaitCount times."
+
+  echo "$ok Transcoding done."
+  pushoverSend "Finished transcoding files."
+}
+
+
+##
+# AWS Check
+##
+
+# Check if AWS is running already
+retryCount=0
+while ps aux | grep -v grep | grep "aws" > /dev/null
+do
+  if [[ "$retryCount" == 0 ]]
+  then
+    echo "$warning AWS is currently running. Waiting for AWS to finish to avoid issues."
+    pushoverSend "There is a process matching AWS already running on your system. To avoid conflict, this script will wait for it to finish."
+  fi
   
-  # Delete the new uploads file
-  echo "Cleaning up."
-  rm $newUploadsFileLoc
-  rm $listingFileLoc
-  rm $indexFileLoc
+  if [[ "$retryCount" == $failTime ]]
+  then
+    echo "$fail Night Uploader failed to run due to an active AWS process taking longer than $failTime seconds."
+    pushoverSend "Night Uploader is canceling because the current running AWS process took longer than $failTime seconds."
+    exit 1
+  fi
   
-  # Move them to the done location.
-  echo "Moving files to $endLocation..."
-  mv "$location"* $endLocation
-  pushoverSend "All done! Enjoy your uploads!"
+  echo -n "."
+  retryCount=$((retryCount+1))
+  sleep 1
+done
+if [[ "$retryCount" != 0 ]]
+then
+  echo
 fi
+
+
+##
+# Run Types and Workflows
+##
+
+echo "$notice Starting workflow ID $runType."
+
+if [[ "$runType" == "" ]] || [[ "$runType" == "1" ]]
+then
+  runType=1
+  if [[ "$(ls $loc)" == "" ]]
+    then
+    # Standard run w/o changes. transcode media, make media pages, index.
+    # No files to upload, reindex, see if anything needs transcoding, or needs media pages. Then, finish.
+    echo "$ok No files found for upload."
+    pushoverSend "No files found for upload. Reindexing."
+
+    transcodeMedia
+    makeIndex
+    cleanUp
+  else
+    # New files found. Make listing of new, upload, move, transcode, media player pages, and index.
+    echo "$ok Files found, continuing with workflow."
+    pushoverSend "New files are being prepared for upload."
+    
+    makeNewFilesList
+    uploadFiles
+    cleanUp
+    moveFiles
+    transcodeMedia
+    makeIndex
+    cleanUp
+  fi
+elif [[ "$runType" == "2" ]]
+then
+  runType=2
+  # Index run transcode media, make media pages, index.
+  echo "$ok Running index workflow."
+  pushoverSend "Running index workflow."
+  
+  transcodeMedia
+  makeIndex
+  cleanUp
+else
+  echo "$fail Unknown workflow ID $runType."
+  exit 1
+fi
+  
+echo "$ok Finished workflow ID $runType."
+pushoverSend "Finished workflow ID $runType."
 
 
 ##
 # Done
 ##
 
-echo "Done"
+echo "$finish Done"
 
 exit 0
