@@ -1,5 +1,10 @@
 # Change Log
 
+## v0.4.1
+
+- Tiny HTML fixes.
+- Hide output of ETC creations.
+
 ## v0.4
 
 - Moves most tasks into functions.
