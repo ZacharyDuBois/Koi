@@ -31,7 +31,7 @@ formatVideo=".*\.(mp4|mov|mkv|m4v|ogv|avi)$"
 formatAudio=".*\.(mp3|acc|ogg|wav|m4a|ogg|oga|opus)$"
 formatCode=".*\.(html|htm|xml|py|c)$"
 formatPDF=".*\.(pdf)$"
-formatImage=".*\.(png|jpg|jpeg|tiff|gif|svg|ico)$"
+formatImage=".*\.(png|jpg|jpeg|tiff|gif|svg|ico|pxm)$"
 formatArchive=".*\.(zip|tar|gz)$"
 # The next 7 are not recommend to edit but you may if you'd like.
 indexFile="index.html"

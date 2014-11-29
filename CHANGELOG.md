@@ -4,6 +4,7 @@
 
 - Tiny HTML fixes.
 - Hide output of ETC creations.
+- Add Pixelmator extension.
 
 ## v0.4
 
