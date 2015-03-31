@@ -29,7 +29,7 @@ pushoverURLTitle=""
 # File extentions and formats below.
 formatVideo=".*\.(mp4|mov|mkv|m4v|ogv|avi)$"
 formatAudio=".*\.(mp3|acc|ogg|wav|m4a|ogg|oga|opus)$"
-formatCode=".*\.(html|htm|xml|py|c)$"
+formatCode=".*\.(html|htm|xml|py|c|http|log|rb|cpp|sh|bash)$"
 formatPDF=".*\.(pdf)$"
 formatImage=".*\.(png|jpg|jpeg|tiff|gif|svg|ico|pxm)$"
 formatArchive=".*\.(zip|tar|gz)$"
