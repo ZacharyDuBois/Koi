@@ -49,13 +49,13 @@ runType=$1
 # Message Types
 ##
 
-fail="[$(tput setaf 1)FAIL$(tput sgr0)]"
-ok="[$(tput setaf 2)OK$(tput sgr0)]"
-running="[$(tput setaf 3)*$(tput sgr0)]"
+fail="[$(tput setaf 1) FAIL $(tput sgr0)]"
+ok="[$(tput setaf 2)  OK  $(tput sgr0)]"
+running="[$(tput setaf 3)  **  $(tput sgr0)]"
 notice="[$(tput setaf 3)NOTICE$(tput sgr0)]"
-warning="[$(tput setaf 3)WARNING$(tput sgr0)]"
-info="[$(tput setaf 6)INFO$(tput sgr0)]"
-finish="[$(tput setaf 4)DONE$(tput sgr0)]"
+warn="[$(tput setaf 3) WARN $(tput sgr0)]"
+info="[$(tput setaf 6) INFO $(tput sgr0)]"
+finish="[$(tput setaf 4) DONE $(tput sgr0)]"
 
 
 ##
