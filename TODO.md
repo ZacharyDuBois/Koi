@@ -7,3 +7,4 @@
 - Add video/media pages *v0.5*
 - More file type icons.
 - Major rewrite.
+- Add YOURLs support.
