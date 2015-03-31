@@ -107,7 +107,7 @@ pushoverSend() {
     then
       echo "$info Pushover message sent successfully: $message"
     else
-      echo "$warning Pushover failed to send message: $message"
+      echo "$warn Pushover failed to send message: $message"
     fi
   else
     echo "$info No Pushover key set to send message: $message"
@@ -305,7 +305,7 @@ while ps aux | grep -v grep | grep "aws" > /dev/null
 do
   if [[ "$retryCount" == 0 ]]
   then
-    echo "$warning AWS is currently running. Waiting for AWS to finish to avoid issues."
+    echo "$warn AWS is currently running. Waiting for AWS to finish to avoid issues."
     pushoverSend "There is a process matching AWS already running on your system. To avoid conflict, this script will wait for it to finish."
   fi
 
