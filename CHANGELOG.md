@@ -1,5 +1,19 @@
 # Change Log
 
+## v0.4.2
+
+- Fix invalid input for ETC.
+- Fix repository URL.
+- Hide the output of ETC (For real this time).
+- Update message types to align output.
+- Add more file types.
+
+## v0.4.1
+
+- Tiny HTML fixes.
+- Hide output of ETC creations.
+- Add Pixelmator extension.
+
 ## v0.4
 
 - Moves most tasks into functions.

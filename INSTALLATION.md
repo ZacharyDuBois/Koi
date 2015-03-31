@@ -1,6 +1,6 @@
 # Installation
 
-*v0.4*
+*v0.4.2*
 
 #### 1)
 
@@ -21,7 +21,7 @@ Night Uploader needs four directories:
 - A template directory.
 - And a temporary files directory.
 
-Make these and take note of the locations. 
+Make these and take note of the locations.
 
 #### 3)
 

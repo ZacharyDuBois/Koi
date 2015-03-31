@@ -2,7 +2,7 @@
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # Night Updater
 # https://github.com/ZacharyDuBois/Night-Uploader
-version="v0.4"
+version="v0.4.2"
 
 
 ##
@@ -29,9 +29,9 @@ pushoverURLTitle=""
 # File extentions and formats below.
 formatVideo=".*\.(mp4|mov|mkv|m4v|ogv|avi)$"
 formatAudio=".*\.(mp3|acc|ogg|wav|m4a|ogg|oga|opus)$"
-formatCode=".*\.(html|htm|xml|py|c)$"
+formatCode=".*\.(html|htm|xml|py|c|http|log|rb|cpp|sh|bash)$"
 formatPDF=".*\.(pdf)$"
-formatImage=".*\.(png|jpg|jpeg|tiff|gif|svg|ico)$"
+formatImage=".*\.(png|jpg|jpeg|tiff|gif|svg|ico|pxm)$"
 formatArchive=".*\.(zip|tar|gz)$"
 # The next 7 are not recommend to edit but you may if you'd like.
 indexFile="index.html"
@@ -49,13 +49,13 @@ runType=$1
 # Message Types
 ##
 
-fail="[$(tput setaf 1)FAIL$(tput sgr0)]"
-ok="[$(tput setaf 2)OK$(tput sgr0)]"
-running="[$(tput setaf 3)*$(tput sgr0)]"
+fail="[$(tput setaf 1) FAIL $(tput sgr0)]"
+ok="[$(tput setaf 2)  OK  $(tput sgr0)]"
+running="[$(tput setaf 3)  **  $(tput sgr0)]"
 notice="[$(tput setaf 3)NOTICE$(tput sgr0)]"
-warning="[$(tput setaf 3)WARNING$(tput sgr0)]"
-info="[$(tput setaf 6)INFO$(tput sgr0)]"
-finish="[$(tput setaf 4)DONE$(tput sgr0)]"
+warn="[$(tput setaf 3) WARN $(tput sgr0)]"
+info="[$(tput setaf 6) INFO $(tput sgr0)]"
+finish="[$(tput setaf 4) DONE $(tput sgr0)]"
 
 
 ##
@@ -73,7 +73,7 @@ fi
 which aws > /dev/null
 checkForAWS=$?
 if [[ "$checkForAWS" != 0 ]]
-then 
+then
   echo "$fail You need AWS CLI to run this script."
   exit 1
 fi
@@ -132,14 +132,14 @@ makeIndex() {
   # Generate Index
   echo "$running Generating index file."
   pushoverSend "Generating index file."
-  
+
   numberOfFiles=0
-  
+
   aws s3 ls s3://"$s3bucket"/ | grep -v PRE | awk -F' ' '{ print $4 }' > $listingFileLoc
   sort -f $listingFileLoc -o $listingFileLoc
   cat "$templateLoc""index/""head.html" > $indexFileLoc
   echo "      <ul>" >> $indexFileLoc
-  
+
   while read listItem
   do
     numberOfFiles=$(($numberOfFiles+1))
@@ -171,15 +171,15 @@ makeIndex() {
     echo "        <li><a href=\"/"$listItem"\"><i class=\"fa "$itemIcon"\"></i> "$listItem"</a></li>" >> $indexFileLoc
 
   done < $listingFileLoc
-  
+
   echo "      </ul>" >> $indexFileLoc
-  
+
   cat "$templateLoc""index/""aftercontent.html" >> $indexFileLoc
   echo "      <p><code>"$numberOfFiles" Items</code></p>" >> $indexFileLoc
   echo "      <p>Index Last Updated: <code>"$curTime"</code></p>" >> $indexFileLoc
-  echo "      <p>Powered by <a href=\"https://bitbucket.org/Zachary_DuBois/night-uploader\">Night Uploader</a> <code>"$version"</code></p>" >> $indexFileLoc
+  echo "      <p>Powered by <a href=\"https://we.destroy.tokyo/Night-Uploader\">Night Uploader</a> <code>"$version"</code></p>" >> $indexFileLoc
   cat "$templateLoc""index/""footer.html" >> $indexFileLoc
-  
+
   # Upload Index
   echo "$running Uploading index."
   aws s3 cp $indexFileLoc s3://"$s3bucket"/"$indexFile" --grants read=uri=http://acs.amazonaws.com/groups/global/AllUsers
@@ -234,7 +234,7 @@ transcodeMedia() {
       then
         # If there is no matches for the mp3 version, make a conversion.
         outputName=$noExtItem$mp3
-        aws elastictranscoder create-job --pipeline-id $etcPipelineID --input Key=$mediaItem --outputs \{\"Key\":\"$outputName\",\"PresetId\":\"$etcMP3PresetID\"\}
+        aws elastictranscoder create-job --pipeline-id $etcPipelineID --input \{\"Key\":\"$mediaItem\"\} --outputs \{\"Key\":\"$outputName\",\"PresetId\":\"$etcMP3PresetID\"\} > /dev/null
         etcQueued=$(($etcQueued+1))
         echo "$ok Created MP3 job for $mediaItem to $outputName"
       fi
@@ -247,7 +247,7 @@ transcodeMedia() {
       then
         # If there is no matches for the mp4 version, make a conversion.
         outputName=$noExtItem$mp4
-        aws elastictranscoder create-job --pipeline-id $etcPipelineID --input Key=$mediaItem --outputs \{\"Key\":\"$outputName\",\"PresetId\":\"$etcMP4PresetID\"\}
+        aws elastictranscoder create-job --pipeline-id $etcPipelineID --input \{\"Key\":\"$mediaItem\"\} --outputs \{\"Key\":\"$outputName\",\"PresetId\":\"$etcMP4PresetID\"\} > /dev/null
         etcQueued=$(($etcQueued+1))
         echo "$ok Created MP4 job for $mediaItem to $outputName"
       fi
@@ -255,7 +255,7 @@ transcodeMedia() {
       then
         # If there is no matches for the mp3 version, make a conversion.
         outputName=$noExtItem$mp3
-        aws elastictranscoder create-job --pipeline-id $etcPipelineID --input Key=$mediaItem --outputs \{\"Key\":\"$outputName\",\"PresetId\":\"$etcMP3PresetID\"\}
+        aws elastictranscoder create-job --pipeline-id $etcPipelineID --input \{\"Key\":\"$mediaItem\"\} --outputs \{\"Key\":\"$outputName\",\"PresetId\":\"$etcMP3PresetID\"\} > /dev/null
         etcQueued=$(($etcQueued+1))
         echo "$ok Created MP3 job for $mediaItem to $outputName"
       fi
@@ -308,14 +308,14 @@ do
     echo "$warning AWS is currently running. Waiting for AWS to finish to avoid issues."
     pushoverSend "There is a process matching AWS already running on your system. To avoid conflict, this script will wait for it to finish."
   fi
-  
+
   if [[ "$retryCount" == $failTime ]]
   then
     echo "$fail Night Uploader failed to run due to an active AWS process taking longer than $failTime seconds."
     pushoverSend "Night Uploader is canceling because the current running AWS process took longer than $failTime seconds."
     exit 1
   fi
-  
+
   echo -n "."
   retryCount=$((retryCount+1))
   sleep 1
@@ -349,7 +349,7 @@ then
     # New files found. Make listing of new, upload, move, transcode, media player pages, and index.
     echo "$ok Files found, continuing with workflow."
     pushoverSend "New files are being prepared for upload."
-    
+
     makeNewFilesList
     uploadFiles
     cleanUp
@@ -364,7 +364,7 @@ then
   # Index run transcode media, make media pages, index.
   echo "$ok Running index workflow."
   pushoverSend "Running index workflow."
-  
+
   transcodeMedia
   makeIndex
   cleanUp
@@ -372,7 +372,7 @@ else
   echo "$fail Unknown workflow ID $runType."
   exit 1
 fi
-  
+
 echo "$ok Finished workflow ID $runType."
 pushoverSend "Finished workflow ID $runType."
 
