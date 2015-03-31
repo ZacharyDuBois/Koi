@@ -177,7 +177,7 @@ makeIndex() {
   cat "$templateLoc""index/""aftercontent.html" >> $indexFileLoc
   echo "      <p><code>"$numberOfFiles" Items</code></p>" >> $indexFileLoc
   echo "      <p>Index Last Updated: <code>"$curTime"</code></p>" >> $indexFileLoc
-  echo "      <p>Powered by <a href=\"https://bitbucket.org/Zachary_DuBois/night-uploader\">Night Uploader</a> <code>"$version"</code></p>" >> $indexFileLoc
+  echo "      <p>Powered by <a href=\"https://we.destroy.tokyo/Night-Uploader\">Night Uploader</a> <code>"$version"</code></p>" >> $indexFileLoc
   cat "$templateLoc""index/""footer.html" >> $indexFileLoc
 
   # Upload Index
