@@ -1,5 +1,0 @@
-[default]
-output = text
-aws_access_key_id = YOURKEYHERE
-aws_secret_access_key = YOURKEYHERE
-region = us-east-1

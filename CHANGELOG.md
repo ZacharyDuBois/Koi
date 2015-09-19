@@ -1,5 +1,10 @@
 # Change Log
 
+## v1.0
+
+- Complete rewrite.
+- Renamed from Night Uploader to Koi
+
 ## v0.4.2
 
 - Fix invalid input for ETC.
