@@ -1,6 +1,7 @@
 {
     "require": {
         "twig/twig": "~1.0",
-        "phpmailer/phpmailer": "^5.2"
+        "phpmailer/phpmailer": "^5.2",
+        "spomky-labs/otphp": "~6.0.0"
     }
 }
