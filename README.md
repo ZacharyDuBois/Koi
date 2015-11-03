@@ -18,3 +18,7 @@
 ## Known Issues
 
 - It doesn't work (yet).
+
+## Tips
+
+Feel like this project is worth some bits? Feel free to send them here: `1MLmDDrfor7bsJw4cwKUqBSDPPKcykUZWp`
