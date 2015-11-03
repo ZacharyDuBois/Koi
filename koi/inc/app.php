@@ -32,12 +32,12 @@ class app {
     }
 
     private function install() {
-        $uri = $_SERVER['REQUEST_URI'];
+        $uri = filter_input(INPUT_SERVER, 'REQUEST_URI');
 
         if ($uri === '/' || $uri === '') {
 
         } else {
-            $host = $_SERVER['HTTP_HOST'];
+            $host = filter_input(INPUT_SERVER, 'HTTP_HOST');
             header('Location: ' . $host . '/');
         }
     }
