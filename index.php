@@ -12,18 +12,17 @@
 
 define('COMPOSER_PATH', __DIR__ . '/vendor');
 define('KOIDIR', __DIR__ . '/koi');
-
+define('KOICONF', KOIDIR . '/data/config.json');
 
 //////////////////////
 //  Startup         //
 //////////////////////
 
-require_once COMPOSER_PATH . '/autoload.php';
 require_once KOIDIR . '/inc/app.php';
-require_once KOIDIR . '/inc/koiException.php';
 
 use Koi\app;
 use Koi\koiException;
+use Koi\dataStore;
 
 $koi = new app();
 

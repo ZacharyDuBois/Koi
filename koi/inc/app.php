@@ -10,6 +10,12 @@ namespace Koi;
 
 
 class app {
+    public function __construct() {
+        require_once KOIDIR . '/inc/koiException.php';
+        require_once COMPOSER_PATH . '/autoload.php';
+        require_once KOIDIR . '/inc/dataStore.php';
+    }
+
     public function start() {
         if ($this->isInstalled()) {
             $this->run();
