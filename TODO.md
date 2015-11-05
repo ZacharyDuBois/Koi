@@ -24,6 +24,7 @@
 - OSX file share/service.
 - Add more push notification services.
 - Add video/media pages.
+- i18n.
 
 ### For v2.1
 
