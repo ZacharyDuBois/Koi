@@ -41,10 +41,19 @@ class app {
         $uri = filter_input(INPUT_SERVER, 'REQUEST_URI');
 
         if ($uri === '/' || $uri === '') {
+            require_once KOIDIR . '/inc/installer.php';
 
+            $installer = new installer();
+            $didItWork = $installer->run();
         } else {
             $host = filter_input(INPUT_SERVER, 'HTTP_HOST');
             header('Location: ' . $host . '/');
         }
+
+        if (is_bool($didItWork)) {
+            return $didItWork;
+        }
+
+        throw new koiException("Something didn't work!");
     }
 }
