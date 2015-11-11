@@ -8,12 +8,12 @@
 
 namespace Koi;
 
-
 class app {
     public function __construct() {
         require_once KOIDIR . '/inc/koiException.php';
         require_once COMPOSER_PATH . '/autoload.php';
         require_once KOIDIR . '/inc/dataStore.php';
+        require_once KOIDIR . '/inc/view.php';
     }
 
     public function start() {
@@ -25,6 +25,10 @@ class app {
         return true;
     }
 
+    private function run() {
+
+    }
+
     private function isInstalled() {
         if (file_exists(KOIDIR . '/data')) {
             return true;
@@ -33,22 +37,19 @@ class app {
         return false;
     }
 
-    private function run() {
-
-    }
-
     private function install() {
         $uri = filter_input(INPUT_SERVER, 'REQUEST_URI');
 
-        if ($uri === '/' || $uri === '') {
-            require_once KOIDIR . '/inc/installer.php';
-
-            $installer = new installer();
-            $didItWork = $installer->run();
-        } else {
+        if (!$uri === '/' || !$uri === '') {
             $host = filter_input(INPUT_SERVER, 'HTTP_HOST');
             header('Location: ' . $host . '/');
+            exit;
         }
+
+        require_once KOIDIR . '/inc/installer.php';
+
+        $installer = new installer();
+        $didItWork = $installer->run();
 
         if (is_bool($didItWork)) {
             return $didItWork;
