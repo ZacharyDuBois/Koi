@@ -30,7 +30,7 @@ class app {
     }
 
     private function isInstalled() {
-        if (file_exists(KOIDIR . '/data')) {
+        if (file_exists(KOICONF)) {
             return true;
         }
 
@@ -38,6 +38,9 @@ class app {
     }
 
     private function install() {
+        require_once KOIDIR . '/inc/installer.php';
+        $installer = new installer();
+
         $uri = filter_input(INPUT_SERVER, 'REQUEST_URI');
 
         if (!$uri === '/' || !$uri === '') {
@@ -46,9 +49,9 @@ class app {
             exit;
         }
 
-        require_once KOIDIR . '/inc/installer.php';
 
-        $installer = new installer();
+
+
         $didItWork = $installer->run();
 
         if (is_bool($didItWork)) {

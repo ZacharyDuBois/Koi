@@ -8,11 +8,7 @@
 
 namespace Koi;
 
-/**
- * Class dataStore
- * @package Koi
- * Used for writing various data to the data storage (json).
- */
+
 class dataStore {
     private $path;
 
