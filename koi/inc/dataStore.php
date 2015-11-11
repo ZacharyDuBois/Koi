@@ -48,7 +48,7 @@ class dataStore {
 
     public function read() {
         if ($this->canRead()) {
-            return file_get_contents($this->path);
+            return json_decode(file_get_contents($this->path), true);
         }
 
         throw new koiException('Cannot read ' . $this->path);
@@ -56,7 +56,7 @@ class dataStore {
 
     public function write($payload) {
         if ($this->canRead() && $this->canWrite()) {
-            if (file_put_contents($this->path, $payload)) {
+            if (file_put_contents($this->path, json_encode($payload, JSON_PRETTY_PRINT))) {
                 return true;
             } else {
                 throw new koiException('Failed to write to ' . $this->path);
