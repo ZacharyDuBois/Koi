@@ -1,9 +1,9 @@
 {
     "require": {
-        "twig/twig": "~1.0",
         "phpmailer/phpmailer": "^5.2",
         "spomky-labs/otphp": "~6.0.0",
         "sendgrid/sendgrid": "~3.2",
-        "aws/aws-sdk-php": "3.9.3"
+        "aws/aws-sdk-php": "3.9.3",
+        "mustache/mustache": "~2.5"
     }
 }
