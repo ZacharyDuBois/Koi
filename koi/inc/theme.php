@@ -41,6 +41,10 @@ class theme {
             throw new koiException('isTheme() did not receive valid theme.');
         }
 
-        return file_exists(KOITPL . '/' . $theme);
+        if (file_exists(KOITPL . '/' . $theme) && file_exists(KOITPL . '/' . $theme . '/theme.json')) {
+            return true;
+        }
+
+        return false;
     }
 }
