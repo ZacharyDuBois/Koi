@@ -1,0 +1,7 @@
+{
+  "name": "Raw",
+  "author": "Zachary DuBois",
+  "authorURI": "https://zacharydubois.me",
+  "partials": "/partials",
+  "extension": "mustache"
+}
