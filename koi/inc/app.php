@@ -43,6 +43,10 @@ class app {
 
         $uri = filter_input(INPUT_SERVER, 'REQUEST_URI');
 
+        if ($uri === '/install/post') {
+
+        }
+
         if (!$uri === '/' || !$uri === '') {
             $host = filter_input(INPUT_SERVER, 'HTTP_HOST');
             header('Location: ' . $host . '/');

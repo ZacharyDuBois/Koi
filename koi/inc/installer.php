@@ -12,20 +12,22 @@ namespace Koi;
 class installer {
 
     private
-        $config,
-        $view;
+        $config;
 
     public function __construct() {
         $this->config = new dataStore(KOICONF);
+    }
+
+    public function form() {
         $view = new view('install', 'raw', array(
             'host' => filter_input(INPUT_SERVER, 'HTTP_HOST'),
             'installDir' => KOIDIR,
             'config' => KOICONF,
+            'pageTitle' => "Install Koi",
         ));
-    }
+        echo $view->render();
 
-    public function run() {
-
+        return true;
     }
 
 }
