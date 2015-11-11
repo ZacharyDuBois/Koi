@@ -13,32 +13,32 @@ class view {
         $view,
         $theme,
         $payload,
+        $tpl,
         $mustache;
 
     public function __construct($view, $theme, $payload) {
         require_once KOIDIR . '/inc/theme.php';
+        $themeFunc = new theme();
 
         if (!is_string($view) || !is_string($theme) || !is_array($payload)) {
-            throw new koiException("Wrong variable type for serveView.");
+            throw new koiException("Wrong variable type for view.");
         }
 
-        if (!file_exists(KOIDIR . '/templates/' . $theme)) {
-            throw new koiException("Theme " . $theme . "does not exist in " . KOIDIR . "/templates/");
-        }
-
-        if (!file_exists(KOIDIR . '/templates/' . $theme . '/' . $view . '.html')) {
-            throw new koiException("View " . $view . "not found in " . KOIDIR . "/templates/" . $theme);
-        }
+        $themeInfo = $themeFunc->getThemeInfo($theme);
 
         $this->view = $view;
         $this->theme = $theme;
         $this->payload = $payload;
-        $this->mustache = new \Mustache_Engine();
+        $this->tpl = KOITPL . '/' . $theme . '/' . $view . $themeInfo['extension'];
+
+        $this->mustache = new \Mustache_Engine(array(
+            'loader' => new \Mustache_Loader_FilesystemLoader(KOITPL . '/' . $theme),
+            'partials_loader' => new \Mustache_Loader_FilesystemLoader(KOITPL . '/' . $theme . '/' . $themeInfo['partials'])
+        ));
+
     }
 
     public function render() {
-
+        return $this->mustache->render($this->tpl, $this->payload);
     }
-
-
 }

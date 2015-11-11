@@ -15,8 +15,9 @@ class theme {
         $themes = array();
         foreach ($itemList as $item) {
             if (is_dir(KOITPL . '/' . $item)) {
-
-                $themes[] = $this->getThemeInfo($item);
+                if ($this->isTheme($item)) {
+                    $themes[] = $this->getThemeInfo($item);
+                }
             }
         }
         return $themes;
