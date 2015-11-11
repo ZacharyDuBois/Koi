@@ -17,7 +17,7 @@ class installer {
 
     public function __construct() {
         $this->config = new dataStore(KOICONF);
-        $this->view = new view('install', 'materialize', array(
+        $view = new view('install', 'raw', array(
             'host' => filter_input(INPUT_SERVER, 'HTTP_HOST'),
             'installDir' => KOIDIR,
             'config' => KOICONF,
