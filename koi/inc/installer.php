@@ -32,7 +32,6 @@ class installer {
 
     public function post() {
         $post = filter_input(INPUT_SERVER, 'POST');
-        
     }
 
 }

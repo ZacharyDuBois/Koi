@@ -16,7 +16,7 @@ class view {
         $tpl,
         $mustache;
 
-    public function __construct($view, $theme, $payload) {
+    public function __construct(string $view, string $theme, array $payload) {
         require_once KOIDIR . '/inc/theme.php';
         $themeFunc = new theme();
 

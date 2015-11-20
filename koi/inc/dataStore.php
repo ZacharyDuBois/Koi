@@ -12,7 +12,7 @@ namespace Koi;
 class dataStore {
     private $path;
 
-    public function __construct($path) {
+    public function __construct(string $path) {
         $this->path = $path;
 
         if (!file_exists($this->path) && !$this->canWrite()) {
@@ -50,7 +50,7 @@ class dataStore {
         throw new koiException('Cannot read ' . $this->path);
     }
 
-    public function write($payload) {
+    public function write(array $payload) {
         if ($this->canRead() && $this->canWrite()) {
             if (file_put_contents($this->path, json_encode($payload, JSON_PRETTY_PRINT))) {
                 return true;

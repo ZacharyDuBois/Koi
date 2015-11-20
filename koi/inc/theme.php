@@ -23,7 +23,7 @@ class theme {
         return $themes;
     }
 
-    public function getThemeInfo($theme) {
+    public function getThemeInfo(string $theme) {
         if (!isset($theme) || !is_string($theme)) {
             throw new koiException("getThemeInfo() did not receive valid theme.");
         }
@@ -37,7 +37,7 @@ class theme {
         return $data;
     }
 
-    public function isTheme($theme) {
+    public function isTheme(string $theme) {
         if (!isset($theme) || !is_string($theme)) {
             throw new koiException('isTheme() did not receive valid theme.');
         }
