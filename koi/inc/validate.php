@@ -14,6 +14,11 @@ class validate {
         $pattern = '^[[:alnum:]]{3,25}$';
         return preg_match($pattern, $username);
     }
+
+    public static function email(string $email) {
+        return filter_var(FILTER_VALIDATE_EMAIL, $email);
+    }
+
         }
 
         return false;
