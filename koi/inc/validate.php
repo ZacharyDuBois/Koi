@@ -10,10 +10,10 @@ namespace Koi;
 
 
 class validate {
-    public static function username($username) {
-        $patern = '^[[:alnum:]]{3,25}$';
-        if (preg_match($patern, $username)) {
-            return true;
+    public static function username(string $username) {
+        $pattern = '^[[:alnum:]]{3,25}$';
+        return preg_match($pattern, $username);
+    }
         }
 
         return false;
