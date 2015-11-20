@@ -19,8 +19,24 @@ class validate {
         return filter_var(FILTER_VALIDATE_EMAIL, $email);
     }
 
+    public static function password(string $pass) {
+        $valid = true;
+        $req = array(
+            '[A-Za-z]',
+            '[0-9]',
+            '\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\[|\]|\\|\/|\,|\.|\?|\'|\;|\:|\{|\}|\-|\_|\=|\+|\`|\~'
+        );
+
+        if (!(strlen(trim($pass)) >= 12) and !(strlen(trim($pass)) <= 100)) {
+            $valid = false;
         }
 
-        return false;
+        foreach ($req as $v) {
+            if (preg_match($req, $v)) {
+                $valid = false;
+            }
+        }
+
+        return $valid;
     }
 }
