@@ -12,7 +12,7 @@
 - Robots.txt.
 - New upload script (Max & Linux for now).
 - Upload notifications (Pushover).
-- AWS S3 storage backend (Requres file cache and wait page for large files [user configurable]).
+- AWS S3 and B2 storage backend (Requires file cache and wait page for large files [user configurable]).
 - Json cache of index.
 - Tmp uploads (screenshot service, etc)
 
