@@ -9,6 +9,10 @@
 namespace Koi;
 
 
+/**
+ * Class koiException
+ * @package Koi
+ */
 class koiException extends \Exception {
 
 }

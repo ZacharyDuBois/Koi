@@ -8,8 +8,19 @@
 
 namespace Koi;
 
-
+/**
+ * Theme controller.
+ *
+ * Class theme
+ * @package Koi
+ */
 class theme {
+    /**
+     * Lists all the themes that are available and valid.
+     *
+     * @return array
+     * @throws koiException
+     */
     public function listThemes() {
         $itemList = scandir(KOITPL, array('..', '.'));
         $themes = array();
@@ -23,6 +34,13 @@ class theme {
         return $themes;
     }
 
+    /**
+     * Gets information on a specific theme.
+     *
+     * @param string $theme
+     * @return dataStore
+     * @throws koiException
+     */
     public function getThemeInfo(string $theme) {
         if (!isset($theme) || !is_string($theme)) {
             throw new koiException("getThemeInfo() did not receive valid theme.");
@@ -37,6 +55,13 @@ class theme {
         return $data;
     }
 
+    /**
+     * Checks if something is a valid theme.
+     *
+     * @param string $theme
+     * @return bool
+     * @throws koiException
+     */
     public function isTheme(string $theme) {
         if (!isset($theme) || !is_string($theme)) {
             throw new koiException('isTheme() did not receive valid theme.');

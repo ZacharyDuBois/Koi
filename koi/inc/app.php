@@ -8,7 +8,17 @@
 
 namespace Koi;
 
+/**
+ * Application controller.
+ *
+ * Class app
+ * @package Koi
+ */
 class app {
+
+    /**
+     * app constructor.
+     */
     public function __construct() {
         require_once KOIDIR . '/inc/koiException.php';
         require_once COMPOSER_PATH . '/autoload.php';
@@ -16,6 +26,12 @@ class app {
         require_once KOIDIR . '/inc/view.php';
     }
 
+    /**
+     * Starts Koi.
+     *
+     * @return bool
+     * @throws koiException
+     */
     public function start() {
         if ($this->isInstalled()) {
             $this->run();
@@ -29,6 +45,11 @@ class app {
 
     }
 
+    /**
+     * Checks if Koi is installed.
+     *
+     * @return bool
+     */
     private function isInstalled() {
         if (file_exists(KOICONF)) {
             return true;
@@ -37,6 +58,12 @@ class app {
         return false;
     }
 
+    /**
+     * Prepares and runs the installer.
+     *
+     * @return bool
+     * @throws koiException
+     */
     private function install() {
         require_once KOIDIR . '/inc/installer.php';
         $installer = new installer();

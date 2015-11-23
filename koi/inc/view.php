@@ -8,6 +8,12 @@
 
 namespace Koi;
 
+/**
+ * View controller.
+ *
+ * Class view
+ * @package Koi
+ */
 class view {
     private
         $view,
@@ -16,6 +22,14 @@ class view {
         $tpl,
         $mustache;
 
+    /**
+     * view constructor.
+     *
+     * @param string $view
+     * @param string $theme
+     * @param array $payload
+     * @throws koiException
+     */
     public function __construct(string $view, string $theme, array $payload) {
         require_once KOIDIR . '/inc/theme.php';
         $themeFunc = new theme();
@@ -38,6 +52,11 @@ class view {
 
     }
 
+    /**
+     * Renders the mustache files.
+     *
+     * @return string
+     */
     public function render() {
         return $this->mustache->render($this->tpl, $this->payload);
     }
