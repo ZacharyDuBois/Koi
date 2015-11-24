@@ -64,7 +64,7 @@ class dataStore {
     /**
      * Reads dataStore file.
      *
-     * @return mixed
+     * @return array
      * @throws koiException
      */
     public function read() {

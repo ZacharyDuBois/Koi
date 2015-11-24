@@ -38,7 +38,7 @@ class theme {
      * Gets information on a specific theme.
      *
      * @param string $theme
-     * @return dataStore
+     * @return array
      * @throws koiException
      */
     public function getThemeInfo(string $theme) {
@@ -50,7 +50,9 @@ class theme {
             throw new koiException($theme . "is not a theme.");
         }
 
-        $data = new dataStore(KOITPL . '/' . $theme . 'theme.json');
+        $dataStore = new dataStore(KOITPL . '/' . $theme . 'theme.json');
+
+        $data = $dataStore->read();
 
         return $data;
     }
