@@ -66,21 +66,8 @@ class app {
      */
     private function install() {
         require_once KOIDIR . '/inc/installer.php';
+
         $installer = new installer();
-
-        $uri = filter_input(INPUT_SERVER, 'REQUEST_URI');
-
-        if ($uri === '/install/post') {
-
-        }
-
-        if (!$uri === '/' || !$uri === '') {
-            $host = filter_input(INPUT_SERVER, 'HTTP_HOST');
-            header('Location: ' . $host . '/');
-            exit;
-        }
-
-
 
 
         $didItWork = $installer->run();
@@ -89,6 +76,6 @@ class app {
             return $didItWork;
         }
 
-        throw new koiException("Something didn't work!");
+        throw new koiException("Something didn't work! didItWork did not return bool.");
     }
 }
