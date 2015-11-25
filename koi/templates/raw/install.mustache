@@ -1,11 +1,35 @@
-{{> header }}
+{{>header}}
 <h1>Install</h1>
 <p>Lets get started. Please fill out the information below.</p>
 <p>Since this project is made to work with a CDN, please make sure you are loading the installer directly on the server and set up the CDN after it is installed.</p>
+<p>All fields are required.</p>
 
+{{#errors}}
+    <div>
+        {{#host}}
+            <p>Host needs to be a valid hostname containing alphanumeric characters, dashes, dots, and underscores.</p>
+        {{/host}}
+
+        {{#contentDir}}
+            <p>Directories may only contain alphanumeric characters and slashes.</p>
+        {{/contentDir}}
+
+        {{#username}}
+            <p>Usernames may only contain alphanumeric characters. They also have to be a length of three to twenty-five characters.</p>
+        {{/username}}
+
+        {{#email}}
+            <p>Please enter a valid email.</p>
+        {{/email}}
+
+        {{#password}}
+            <p>Passwords must be twelve to one hundred characters.</p>
+        {{/password}}
+    </div>
+{{/ errors}}
 <form action="/install/post" method="post">
     <label for="host">Install domain: </label>
-    <input type="text" value="{{ host }}" placeholder="{{ host }}" id="host">
+    <input type="text" value="{{host}}" placeholder="{{host}}" id="host">
 
     <p>The domain or subdomain of your Koi installation. Subdirectory support is not yet working or planned.</p>
 
@@ -24,6 +48,6 @@
     <input type="password" id="password">
 </form>
 
-<p>Settings are saved to {{ config }}</p>
-<p>Currently, Koi's resource and include directory is set to {{ installDir }}</p>
-{{> footer }}
+<p>Settings are saved to {{config}}</p>
+<p>Currently, Koi's resource and include directory is set to {{installDir}}</p>
+{{> footer}}

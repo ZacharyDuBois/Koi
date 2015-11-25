@@ -56,11 +56,13 @@ class installer {
      * @return bool
      */
     private function form() {
+        $errors = filter_input_array(INPUT_GET);
         $view = new view('install', 'raw', array(
-            'host' => filter_input(INPUT_SERVER, 'HTTP_HOST'),
+            'host'       => filter_input(INPUT_SERVER, 'HTTP_HOST'),
             'installDir' => KOIDIR,
-            'config' => KOICONF,
-            'pageTitle' => "Install Koi",
+            'config'     => KOICONF,
+            'pageTitle'  => "Install Koi",
+            'errors'     => $errors
         ));
 
         $view->render();
