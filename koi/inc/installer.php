@@ -27,7 +27,7 @@ class installer {
     }
 
     public function run() {
-        $uri = filter_input(INPUT_SERVER, 'REQUEST_URI');
+        $uri = filter_input(INPUT_SERVER, 'PATH_INFO');
 
         switch ($uri) {
             case '/install/post':
@@ -38,7 +38,7 @@ class installer {
                 break;
             default:
                 $host = filter_input(INPUT_SERVER, 'HTTP_HOST');
-                header('Location: ' . $host . '/');
+                header('Location: ' . $host . '/install');
                 $work = false;
                 break;
         }
