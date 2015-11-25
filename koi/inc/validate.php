@@ -69,7 +69,7 @@ class validate {
      * @return bool
      */
     public static function dir(string $dir) {
-        $pattern = '[A-Za-z0-9\/]+';
+        $pattern = '^[A-Za-z0-9\/]+\/$';
 
         return preg_match($pattern, $dir);
     }
