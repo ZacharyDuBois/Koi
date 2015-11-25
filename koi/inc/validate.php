@@ -50,7 +50,15 @@ class validate {
         return preg_match($pattern, $pass);
     }
 
+    /**
+     * Host validation.
+     *
+     * @param string $host
+     * @return bool
+     */
+    public static function host(string $host) {
+        $pattern = '^[A-Za-z0-9.\-_]+$';
 
-        return $valid;
+        return preg_match($pattern, $host);
     }
 }
