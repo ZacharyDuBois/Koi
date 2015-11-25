@@ -16,16 +16,11 @@ namespace Koi;
  */
 class installer {
 
-    private
-        $config;
-
     /**
-     * installer constructor.
+     * Runs the installer.
+     *
+     * @return bool
      */
-    public function __construct() {
-        $this->config = new dataStore(KOICONF);
-    }
-
     public function run() {
         $uri = filter_input(INPUT_SERVER, 'PATH_INFO');
 
@@ -35,6 +30,8 @@ class installer {
                 // If post didn't validate, send to error.
                 if (is_array($work)) {
                     $this->returnErr($work);
+                } else {
+                    $this->save();
                 }
                 break;
             case '/install':
@@ -45,6 +42,10 @@ class installer {
                 header('Location: ' . $host . '/install');
                 $work = false;
                 break;
+        }
+
+        if (is_array($work)) {
+            $work = false;
         }
 
         return $work;
@@ -131,4 +132,53 @@ class installer {
         return true;
     }
 
+    private function save() {
+        $post = filter_input(INPUT_SERVER, 'POST');
+
+        // Write config.
+        $configFile = new dataStore(KOICONF);
+        $config = array(
+            'title'       => 'Koi',
+            'host'        => $post['host'],
+            'contentDir'  => $post['contentDir'],
+            'description' => 'A new Koi installation.'
+        );
+
+        if (!$configFile->write($config)) {
+            throw new koiException("Failed to create config.json");
+        }
+
+        // Setup content dirs.
+        $dirs = array(
+            'tempFile',
+            'tempFileMeta',
+            'file',
+            'fileMeta',
+            'configs'
+        );
+
+        foreach ($dirs as $dir) {
+            if (!mkdir($post['contentDir'] . '/' . $dir)) {
+                throw new koiException("Failed to make dir " . $dir . " in " . $post['contentDir']);
+            }
+        }
+
+        // Create user
+        require_once __DIR__ . '/account.php';
+        $userFileLocation = $post['contentDir'] . '/configs/users.json';
+        $userFile = new dataStore($userFileLocation);
+        $user = array(
+            $post['username'] => array(
+                'name'     => 'Koi User',
+                'password' => account::hashPassword($post['password']),
+                'email'    => $post['email'],
+                'admin'    => true
+            )
+        );
+
+        if (!$userFile->write($user)) {
+            throw new koiException("Failed to write user.json");
+        }
+
+    }
 }
