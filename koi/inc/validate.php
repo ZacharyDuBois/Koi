@@ -61,4 +61,16 @@ class validate {
 
         return preg_match($pattern, $host);
     }
+
+    /**
+     * Directory validation.
+     *
+     * @param string $dir
+     * @return bool
+     */
+    public static function dir(string $dir) {
+        $pattern = '[A-Za-z0-9\/]+';
+
+        return preg_match($pattern, $dir);
+    }
 }
