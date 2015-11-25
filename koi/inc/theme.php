@@ -31,6 +31,7 @@ class theme {
                 }
             }
         }
+
         return $themes;
     }
 

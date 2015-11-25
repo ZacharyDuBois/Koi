@@ -38,6 +38,7 @@ class app {
         } else {
             $this->install();
         }
+
         return true;
     }
 
