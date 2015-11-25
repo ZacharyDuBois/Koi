@@ -23,6 +23,7 @@ class validate {
      */
     public static function username(string $username) {
         $pattern = '^[[:alnum:]]{3,25}$';
+
         return preg_match($pattern, $username);
     }
 
@@ -43,22 +44,12 @@ class validate {
      * @return bool
      */
     public static function password(string $pass) {
-        $valid = true;
-        $req = array(
-            '[A-Za-z]',
-            '[0-9]',
-            '\!|\@|\#|\$|\%|\^|\&|\*|\(|\)|\[|\]|\\|\/|\,|\.|\?|\'|\;|\:|\{|\}|\-|\_|\=|\+|\`|\~'
-        );
+        $pass = trim($pass);
+        $pattern = '[A-Za-z0-9~!@#$%^&*()_+`={}|:";\'<>?,.\-\[\]\\\/]{12,100}$';
 
-        if (!(strlen(trim($pass)) >= 12) and !(strlen(trim($pass)) <= 100)) {
-            $valid = false;
-        }
+        return preg_match($pattern, $pass);
+    }
 
-        foreach ($req as $v) {
-            if (preg_match($req, $v)) {
-                $valid = false;
-            }
-        }
 
         return $valid;
     }
