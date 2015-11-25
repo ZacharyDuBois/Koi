@@ -2,7 +2,6 @@
 
 ### For v1
 
-- Major rewrite.
 - More file type icons (and custom ones).
 - Update checks.
 - No database or complex configs.
