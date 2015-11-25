@@ -32,6 +32,10 @@ class installer {
         switch ($uri) {
             case '/install/post':
                 $work = $this->post();
+                // If post didn't validate, send to error.
+                if (is_array($work)) {
+                    $this->returnErr($work);
+                }
                 break;
             case '/install':
                 $work = $this->form();
@@ -58,16 +62,71 @@ class installer {
             'config' => KOICONF,
             'pageTitle' => "Install Koi",
         ));
-        echo $view->render();
+
+        $view->render();
 
         return true;
     }
 
     /**
-     * Validates the inbound post payload.
+     * Take inbound post and validate it.
+     *
+     * @return array|bool
      */
     private function post() {
         $post = filter_input(INPUT_SERVER, 'POST');
+
+        $err = array();
+
+        // Check each post item.
+        foreach ($post as $k => $v) {
+            switch ($k) {
+                case 'host':
+                    $check = validate::host($v);
+                    break;
+                case 'contentDir':
+                    $check = validate::dir($v);
+                    break;
+                case 'username':
+                    $check = validate::username($v);
+                    break;
+                case 'email':
+                    $check = validate::email($v);
+                    break;
+                case 'password':
+                    $check = validate::password($v);
+                    break;
+                default:
+                    $check = false;
+                    break;
+            }
+
+            // If it doesn't validate, add to the error array.
+            if ($check) {
+                $err[$k] = false;
+            }
+        }
+
+        // If $err isn't empty, something didn't validate. Return errors.
+        if (!empty($err)) {
+            return $err;
+        }
+
+        return true;
+    }
+
+    /**
+     * Redirects to install page w/ errors.
+     *
+     * @param array $errors
+     * @return bool
+     */
+    private function returnErr(array $errors) {
+        $host = filter_input(INPUT_SERVER, 'HTTP_HOST');
+        $query = http_build_query($errors);
+        header('Location: ' . $host . '/install?' . $query);
+
+        return true;
     }
 
 }
