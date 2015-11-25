@@ -31,11 +31,7 @@ $koi = new app();
 //////////////////////
 
 try {
-
     $koi->start();
-
 } catch (koiException $e) {
-
     echo $e->getMessage();
-
 }
