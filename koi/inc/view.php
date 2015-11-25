@@ -55,9 +55,11 @@ class view {
     /**
      * Renders the mustache files.
      *
-     * @return string
+     * @return bool
      */
     public function render() {
-        return $this->mustache->render($this->tpl, $this->payload);
+        echo $this->mustache->render($this->tpl, $this->payload);
+
+        return true;
     }
 }
