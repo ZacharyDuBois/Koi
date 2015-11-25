@@ -21,7 +21,7 @@ class validate {
      * @param string $username
      * @return int
      */
-    public static function username(string $username) {
+    public static function username($username) {
         $pattern = '^[[:alnum:]]{3,25}$';
 
         return preg_match($pattern, $username);
@@ -33,7 +33,7 @@ class validate {
      * @param string $email
      * @return mixed
      */
-    public static function email(string $email) {
+    public static function email($email) {
         return filter_var(FILTER_VALIDATE_EMAIL, $email);
     }
 
@@ -43,7 +43,7 @@ class validate {
      * @param string $pass
      * @return bool
      */
-    public static function password(string $pass) {
+    public static function password($pass) {
         $pass = trim($pass);
         $pattern = '[A-Za-z0-9~!@#$%^&*()_+`={}|:";\'<>?,.\-\[\]\\\/]{12,100}$';
 
@@ -56,7 +56,7 @@ class validate {
      * @param string $host
      * @return bool
      */
-    public static function host(string $host) {
+    public static function host($host) {
         $pattern = '^[A-Za-z0-9.\-_]+$';
 
         return preg_match($pattern, $host);
@@ -68,7 +68,7 @@ class validate {
      * @param string $dir
      * @return bool
      */
-    public static function dir(string $dir) {
+    public static function dir($dir) {
         $pattern = '^[A-Za-z0-9\/]+\/$';
 
         return preg_match($pattern, $dir);

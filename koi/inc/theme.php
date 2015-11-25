@@ -42,7 +42,7 @@ class theme {
      * @return array
      * @throws koiException
      */
-    public function getThemeInfo(string $theme) {
+    public function getThemeInfo($theme) {
         if (!isset($theme) || !is_string($theme)) {
             throw new koiException("getThemeInfo() did not receive valid theme.");
         }
@@ -51,7 +51,7 @@ class theme {
             throw new koiException($theme . "is not a theme.");
         }
 
-        $dataStore = new dataStore(KOITPL . '/' . $theme . 'theme.json');
+        $dataStore = new dataStore(KOITPL . '/' . $theme . '/theme.json');
 
         $data = $dataStore->read();
 
@@ -65,7 +65,7 @@ class theme {
      * @return bool
      * @throws koiException
      */
-    public function isTheme(string $theme) {
+    public function isTheme($theme) {
         if (!isset($theme) || !is_string($theme)) {
             throw new koiException('isTheme() did not receive valid theme.');
         }

@@ -22,7 +22,7 @@ class installer {
      * @return bool
      */
     public function run() {
-        $uri = filter_input(INPUT_SERVER, 'PATH_INFO');
+        $uri = parse_url(filter_input(INPUT_SERVER, 'REQUEST_URI'), PHP_URL_PATH);
 
         switch ($uri) {
             case '/install/post':
@@ -39,7 +39,7 @@ class installer {
                 break;
             default:
                 $host = filter_input(INPUT_SERVER, 'HTTP_HOST');
-                header('Location: ' . $host . '/install');
+                header('Location: http://' . $host . '/install');
                 $work = false;
                 break;
         }
@@ -77,7 +77,9 @@ class installer {
      * @return array|bool
      */
     private function post() {
-        $post = filter_input(INPUT_SERVER, 'POST');
+        require_once __DIR__ . '/validate.php';
+
+        $post = filter_input_array(INPUT_POST);
 
         $err = array();
 
@@ -105,7 +107,7 @@ class installer {
             }
 
             // If it doesn't validate, add to the error array.
-            if ($check) {
+            if (!$check) {
                 $err[$k] = false;
             }
         }

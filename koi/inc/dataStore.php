@@ -23,7 +23,7 @@ class dataStore {
      * @param string $path
      * @throws koiException
      */
-    public function __construct(string $path) {
+    public function __construct($path) {
         $this->path = $path;
 
         if (!file_exists($this->path) && !$this->canWrite()) {

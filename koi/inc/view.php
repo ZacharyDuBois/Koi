@@ -30,7 +30,7 @@ class view {
      * @param array $payload
      * @throws koiException
      */
-    public function __construct(string $view, string $theme, array $payload) {
+    public function __construct($view, $theme, array $payload) {
         require_once KOIDIR . '/inc/theme.php';
         $themeFunc = new theme();
 
@@ -43,7 +43,7 @@ class view {
         $this->view = $view;
         $this->theme = $theme;
         $this->payload = $payload;
-        $this->tpl = KOITPL . '/' . $theme . '/' . $view . $themeInfo['extension'];
+        $this->tpl = $view;
 
         $this->mustache = new \Mustache_Engine(array(
             'loader'          => new \Mustache_Loader_FilesystemLoader(KOITPL . '/' . $theme),
