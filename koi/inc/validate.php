@@ -22,7 +22,7 @@ class validate {
      * @return int
      */
     public static function username($username) {
-        $pattern = '^[[:alnum:]]{3,25}$';
+        $pattern = '/^[[:alnum:]]{3,25}$/';
 
         return preg_match($pattern, $username);
     }
@@ -45,7 +45,7 @@ class validate {
      */
     public static function password($pass) {
         $pass = trim($pass);
-        $pattern = '[A-Za-z0-9~!@#$%^&*()_+`={}|:";\'<>?,.\-\[\]\\\/]{12,100}$';
+        $pattern = '/[A-Za-z0-9~!@#$%^&*()_+`={}|:";\'<>?,.\-\[\]\\\/]{12,100}$/';
 
         return preg_match($pattern, $pass);
     }
@@ -57,7 +57,7 @@ class validate {
      * @return bool
      */
     public static function host($host) {
-        $pattern = '^[A-Za-z0-9.\-_]+$';
+        $pattern = '/^[A-Za-z0-9.\-_]+$/';
 
         return preg_match($pattern, $host);
     }
@@ -69,8 +69,26 @@ class validate {
      * @return bool
      */
     public static function dir($dir) {
-        $pattern = '^[A-Za-z0-9\/]+\/$';
+        $pattern = '/^[A-Za-z0-9\/]+\/$/';
 
         return preg_match($pattern, $dir);
+    }
+
+    public static function title($title) {
+        $pattern = '/^.{1,25}$/';
+
+        return preg_match($pattern, $title);
+    }
+
+    public static function description($desc) {
+        $pattern = '/^.+$/';
+
+        return preg_match($pattern, $desc);
+    }
+
+    public static function name($name) {
+        $pattern = '/^.{1,25}$/';
+
+        return preg_match($pattern, $name);
     }
 }
