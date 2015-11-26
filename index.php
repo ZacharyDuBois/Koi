@@ -14,6 +14,8 @@ define('COMPOSER_PATH', __DIR__ . '/vendor');
 define('KOIDIR', __DIR__ . '/koi');
 define('KOICONF', KOIDIR . '/data/config.json');
 define('KOITPL', KOIDIR . '/templates');
+define('SessionLifetime', (60 * 60 * 24 * 7));
+define('KOIVER', '2.0.0');
 
 //////////////////////
 //  Startup         //
