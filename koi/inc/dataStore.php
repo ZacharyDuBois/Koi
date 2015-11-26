@@ -10,13 +10,20 @@ namespace Koi;
 
 
 /**
- * Data storage functions for configs and other data
+ * Data storage functions for configs and other data.
+ *
+ * The dataStore format includes a meta section containing various information such as:
+ * - Last write.
+ * - Koi version during last write.
+ *
+ * Then a second section where the payload to be saved (data) is stored. When using the read function, just the payload is sent. Meta is not.
  *
  * Class dataStore
  * @package Koi
  */
 class dataStore {
-    private $path;
+    private
+        $path;
 
     /**
      * dataStore constructor.
@@ -69,10 +76,31 @@ class dataStore {
      */
     public function read() {
         if ($this->canRead()) {
-            return json_decode(file_get_contents($this->path), true);
+            $data = json_decode(file_get_contents($this->path), true);
+
+            return $data['payload'];
         }
 
         throw new koiException('Cannot read ' . $this->path);
+    }
+
+    public function readMeta() {
+        if ($this->canRead()) {
+            $data = json_encode(file_get_contents($this->path), true);
+
+            return $data['meta'];
+        }
+
+        return false;
+    }
+
+    private function setMeta() {
+        $meta = array(
+            'version'   => KOIVER,
+            'lastWrite' => time()
+        );
+
+        return $meta;
     }
 
     /**
@@ -84,7 +112,12 @@ class dataStore {
      */
     public function write(array $payload) {
         if ($this->canRead() && $this->canWrite()) {
-            if (file_put_contents($this->path, json_encode($payload, JSON_PRETTY_PRINT))) {
+            $data = array(
+                'meta'    => $this->setMeta(),
+                'payload' => $payload
+            );
+
+            if (file_put_contents($this->path, json_encode($data, JSON_PRETTY_PRINT))) {
                 return true;
             } else {
                 throw new koiException('Failed to write to ' . $this->path);
