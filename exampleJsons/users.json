@@ -1,0 +1,16 @@
+{
+  "username": {
+    "name": "Some Name",
+    "email": "someone@somedomain.tld",
+    "password": "A hashed password",
+    "totp": "SECRETKEY",
+    "admin": true
+  },
+  "username2": {
+    "name": "Some Name",
+    "email": "someone@somedomain.tld",
+    "password": "A hashed password",
+    "totp": false,
+    "admin": true
+  }
+}
