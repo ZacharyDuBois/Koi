@@ -43,6 +43,10 @@ class app {
     }
 
     private function run() {
+        $config = new config();
+        define('KOIHOST', $config->getHost());
+        define('KOIUSERS', $config->getContentDir() . '/config/users.json');
+        define('KOISESS', $config->getContentDir() . '/config/sessions.json');
 
     }
 
