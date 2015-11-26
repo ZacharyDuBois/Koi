@@ -7,6 +7,9 @@
  */
 
 namespace Koi;
+/**
+ * TODO: Fix the crap out of this. Build the app, then the installer.
+ */
 
 /**
  * Koi installation controller.

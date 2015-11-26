@@ -33,11 +33,11 @@ class app {
      * @throws koiException
      */
     public function start() {
-        if ($this->isInstalled()) {
-            $this->run();
-        } else {
-            $this->install();
-        }
+        //if ($this->isInstalled()) {
+        $this->run();
+        //} else {
+        //    $this->install();
+        //}
 
         return true;
     }
