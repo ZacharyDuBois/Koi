@@ -41,93 +41,93 @@ class account {
     }
 
     public function isUser($user) {
-        if (in_array($user, $this->getUsersList())) {
-            return true;
+        if (is_string($user)) {
+            if (in_array($user, $this->getUsersList())) {
+                return true;
+            }
+
+            return false;
         }
 
-        return false;
+        throw new koiException("isUser user is not of string type.");
     }
 
-    public function getUserInfo($user) {
+    public function getMeta($user, $meta = null) {
         if ($this->isUser($user)) {
-            return $this->userData[$user];
+            if ($meta === null) {
+                return $this->userData[$user];
+            }
+
+            if ($meta !== null && isset($this->userData[$user][$meta])) {
+                return $this->userData[$user][$meta];
+            }
+
+            return false;
         }
 
         throw new koiException("Cannot getUserInfo on non-existing user.");
     }
 
-    public function isAdmin($user) {
-        return $this->getUserInfo($user)['admin'];
-    }
+    public function setMeta($user, $meta, $value, $new = false) {
+        if (is_string($meta) && ($this->isUser($user) || $new === true)) {
+            if ($meta === 'email' && is_string($value)) {
+                if (validate::email($value)) {
+                    $this->userNew[$user]['email'] = $value;
 
-    public function setAdminStatus($user, $admin, $new = false) {
-        if (is_string($user) && is_bool($admin) && ($this->isUser($user) || $new === true)) {
-            $this->userNew[$user]['admin'] = $admin;
+                    return true;
+                }
 
-            return true;
-        }
+                return false;
+            }
 
-        throw new koiException("setAdminStatus user doesn't exist or params are wrong type.");
-    }
+            if ($meta === 'name' && is_string($value)) {
+                if (validate::name($value)) {
+                    $this->userNew[$user]['name'] = $value;
 
-    public function getName($user) {
-        return $this->getUserInfo($user)['name'];
-    }
+                    return true;
+                }
 
-    public function setName($user, $name, $new = false) {
-        if (is_string($user) && is_string($name) && ($this->isUser($user) || $new === true)) {
-            if (validate::name($name)) {
-                $this->userNew[$user]['name'] = $name;
+                return false;
+            }
+
+            if ($meta === 'admin' && is_bool($value)) {
+                $this->userNew[$user]['admin'] = $value;
 
                 return true;
             }
 
-            return false;
-        }
+            if ($meta === 'password' && is_string($value)) {
+                if (validate::password($value)) {
+                    $this->userNew[$user]['password'] = utility::hashPass($value);
 
-        throw new koiException("setName user doesn't exist or params are wrong type.");
-    }
+                    return true;
+                }
 
-    public function getEmail($user) {
-        return $this->getUserInfo($user)['email'];
-    }
-
-    public function setEmail($user, $email, $new = false) {
-        if (is_string($user) && is_string($email) && ($this->isUser($user) || $new === true)) {
-            if (validate::email($email)) {
-                $this->userNew[$user]['email'] = $email;
-
-                return true;
+                return false;
             }
 
-            return false;
-        }
+            if ($meta === 'totp' && is_bool($value)) {
+                if ($value === true) {
+                    $this->userNew[$user]['totp'] = utility::genTOTPSecret();
 
-        throw new koiException("setEmail user doesn't exist or params are wrong type.");
-    }
+                    return true;
+                } elseif ($value === false) {
+                    $this->userNew[$user]['totp'] = false;
 
-    public function getPassHash($user) {
-        return $this->getUserInfo($user)['password'];
-    }
+                    return true;
+                }
 
-    public function setPass($user, $pass, $new = false) {
-        if (is_string($user) && is_string($pass) && ($this->isUser($user) || $new === true)) {
-            if (validate::password($pass)) {
-                $this->userNew[$user]['password'] = utility::hashPass($pass);
-
-                return true;
+                return false;
             }
-
-            return false;
         }
 
-        throw new koiException("setPass user doesn't exist or params are wrong type.");
+        throw new koiException("setMeta user doesn't exist, meta doesn't exist or params are wrong type.");
     }
 
     public function changePass($user, $old, $new) {
-        if (is_string($user) && is_string($old) && is_string($new) && $this->isUser($user)) {
-            if (utility::verifyPass($old, $this->getPassHash($user)) && validate::password($new)) {
-                $this->setPass($user, $new);
+        if (is_string($old) && is_string($new) && $this->isUser($user)) {
+            if (utility::verifyPass($old, $this->getMeta($user, 'password'))) {
+                $this->setMeta($user, 'password', $new);
 
                 return true;
             }
@@ -138,36 +138,15 @@ class account {
         throw new koiException("changePass user doesn't exist or params are wrong type.");
     }
 
-    public function getTOTP($user) {
-        return $this->getUserInfo($user)['totp'];
-    }
-
-
-    public function setTOTPSecret($user, $turnOff = false) {
-        if ($this->isUser($user)) {
-            if ($turnOff === false) {
-                $this->userNew[$user]['totp'] = utility::genTOTPSecret();
-
-                return true;
-            }
-
-            $this->userNew[$user]['totp'] = false;
-
-            return true;
-        }
-
-        throw new koiException("getTOTPSecret user does not exist.");
-    }
-
     private function getTOTPObject($user) {
         if (is_string($user) && $this->isUser($user)) {
-            if ($this->getTOTP($user) !== false) {
+            if ($this->getMeta($user, 'totp') !== false) {
                 $totp = new TOTP();
                 $totp->setLabel($user)
                     ->setDigest(6)
                     ->setDigest('sha1')
                     ->setInterval(30)
-                    ->setSecret($this->getTOTP($user));
+                    ->setSecret($this->getMeta($user, 'totp'));
 
                 return $totp;
             }
@@ -179,14 +158,14 @@ class account {
     }
 
     public function getTOTPQRCode($user) {
-        if (is_string($user) && $this->isUser($user)) {
-            if ($this->getTOTP($user) !== false) {
+        if ($this->isUser($user)) {
+            if ($this->getMeta($user, 'totp') !== false) {
 
                 $totp = $this->getTOTPObject($user);
                 $uri = $totp->getProvisioningUri();
-                $qr = "http://chart.apis.google.com/chart?cht=qr&chs=250x250&chl=" . urlencode($uri);
+                $qrCode = 'http://chart.apis.google.com/chart?cht=qr&chs=250x250&chl=' . urlencode($uri);
 
-                return $qr;
+                return $qrCode;
             }
 
             return false;
@@ -196,8 +175,8 @@ class account {
     }
 
     public function getTOTPCurrent($user) {
-        if (is_string($user) && $this->isUser($user)) {
-            if ($this->getTOTP($user) !== false) {
+        if ($this->isUser($user)) {
+            if ($this->getMeta($user, 'totp') !== false) {
                 $totp = $this->getTOTPObject($user);
 
                 return $totp->now();
@@ -210,8 +189,8 @@ class account {
     }
 
     public function verifyTOTP($user, $code) {
-        if (is_string($user) && is_int($code) && $this->isUser($user)) {
-            if ($this->getTOTP($user) !== false) {
+        if (is_int($code) && $this->isUser($user)) {
+            if ($this->getMeta($user, 'totp') !== false) {
                 $totp = $this->getTOTPObject($user);
 
                 return $totp->verify($code);
@@ -223,15 +202,15 @@ class account {
         throw new koiException("verifyTOTP user does not exist or wrong param types.");
     }
 
-    public function create($user, $name, $email, $pass, $admin) {
-        if (is_string($user) && is_string($name) && is_string($email) && is_string($pass) && is_bool($admin)) {
+    public function create($user, array $params) {
+        if (is_string($user) && is_array($params)) {
             if (validate::username($user)) {
                 $this->userNew[$user] = array();
 
-                $this->setName($user, $name, true);
-                $this->setEmail($user, $email, true);
-                $this->setPass($user, $pass, true);
-                $this->setAdminStatus($user, $admin, true);
+                $this->setMeta($user, 'name', $params['name'], true);
+                $this->setMeta($user, 'email', $params['email'], true);
+                $this->setMeta($user, 'admin', $params['admin'], true);
+                $this->setMeta($user, 'password', $params['password'], true);
 
                 return true;
             }
@@ -243,7 +222,7 @@ class account {
     }
 
     public function delete($user) {
-        if (is_string($user) && $this->isUser($user)) {
+        if ($this->isUser($user)) {
             unset ($this->userNew[$user]);
 
             return true;
