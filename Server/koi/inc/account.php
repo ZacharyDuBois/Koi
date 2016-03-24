@@ -70,54 +70,52 @@ class account {
 
     public function setMeta($user, $meta, $value, $new = false) {
         if (is_string($meta) && ($this->isUser($user) || $new === true)) {
-            if ($meta === 'email' && is_string($value)) {
-                if (validate::email($value)) {
-                    $this->userNew[$user]['email'] = $value;
 
-                    return true;
-                }
+            switch ($meta) {
+                case 'name':
+                    if (validate::name($value)) {
+                        $this->userNew[$user]['name'] = $value;
 
-                return false;
-            }
+                        return true;
+                    }
 
-            if ($meta === 'name' && is_string($value)) {
-                if (validate::name($value)) {
-                    $this->userNew[$user]['name'] = $value;
+                    return false;
 
-                    return true;
-                }
+                case 'email':
+                    if (validate::email($value)) {
+                        $this->userNew[$user]['name'] = $value;
 
-                return false;
-            }
+                        return true;
+                    }
 
-            if ($meta === 'admin' && is_bool($value)) {
-                $this->userNew[$user]['admin'] = $value;
+                    return false;
 
-                return true;
-            }
+                case 'admin':
+                    if (is_bool($value)) {
+                        $this->userNew[$user]['admin'] = $value;
 
-            if ($meta === 'password' && is_string($value)) {
-                if (validate::password($value)) {
-                    $this->userNew[$user]['password'] = utility::hashPass($value);
+                        return true;
+                    }
 
-                    return true;
-                }
+                    return false;
 
-                return false;
-            }
+                case 'password':
+                    if (validate::password($value)) {
+                        $this->userNew[$user]['password'] = utility::hashPass($value);
 
-            if ($meta === 'totp' && is_bool($value)) {
-                if ($value === true) {
-                    $this->userNew[$user]['totp'] = utility::genTOTPSecret();
+                        return true;
+                    }
 
-                    return true;
-                } elseif ($value === false) {
-                    $this->userNew[$user]['totp'] = false;
+                    return false;
 
-                    return true;
-                }
+                case 'totp':
+                    if ($value === true) {
+                        $this->userNew[$user]['totp'] = utility::genTOTPSecret();
 
-                return false;
+                        return true;
+                    }
+
+                    return false;
             }
         }
 
