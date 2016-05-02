@@ -11,6 +11,12 @@
 - PHP => 5.5 w/ php-json.
 - A web server (Depending on the use case, one with a lot of storage).
 
+## Mailing List
+
+To receive updates and information about this project, please subscribe to my
+[mailing list](https://we.destroy.tokyo/Projects-Email-List) and select the
+projects you would like to be notified about.
+
 ## Notices
 
 - __NOTHING HAS BEEN TESTED IN THIS BRANCH (YET)!__
